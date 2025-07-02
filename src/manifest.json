@@ -1,0 +1,41 @@
+{
+  "manifest_version": 3,
+  "name": "Lovebug - AI Assistant",
+  "version": "1.0.0",
+  "description": "AI-powered browser assistant for productivity",
+  "permissions": [
+    "activeTab",
+    "contextMenus",
+    "storage",
+    "tabs"
+  ],
+  "host_permissions": [
+    "<all_urls>"
+  ],
+  "action": {
+    "default_popup": "index.html",
+    "default_icon": "icon.svg"
+  },
+  "background": {
+    "service_worker": "src/background.ts",
+    "type": "module"
+  },
+  "content_scripts": [
+    {
+      "matches": ["<all_urls>"],
+      "js": ["src/content.tsx"]
+    }
+  ],
+  "web_accessible_resources": [
+    {
+      "resources": ["*.css", "*.js"],
+      "matches": ["<all_urls>"]
+    }
+  ],
+  "icons": {
+    "16": "icon.svg",
+    "32": "icon.svg",
+    "48": "icon.svg",
+    "128": "icon.svg"
+  }
+} 
