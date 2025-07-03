@@ -3,7 +3,7 @@ import ReactDOM from 'react-dom/client'
 import type { Message, SelectionInfo } from './types'
 import FloatingUI from './components/FloatingUI'
 import ChatApp from './components/ChatApp'
-import './content.css'
+import styles from './content.module.css'
 
 let floatingUIRoot: ReactDOM.Root | null = null
 let floatingUIContainer: HTMLElement | null = null
@@ -17,20 +17,35 @@ function createChatButton() {
   
   chatButtonContainer = document.createElement('div')
   chatButtonContainer.id = 'lovebug-chat-button'
-  chatButtonContainer.innerHTML = `
-    <button class="lovebug-fab">
-      <svg class="chat-icon" width="24" height="24" viewBox="0 0 24 24" fill="white">
-        <path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2z"/>
-      </svg>
-      <svg class="close-icon" width="24" height="24" viewBox="0 0 24 24" fill="white" style="display: none;">
-        <path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/>
-      </svg>
-    </button>
-  `
+  
+  const button = document.createElement('button')
+  button.className = styles.chatButton
+  
+  const overlay = document.createElement('span')
+  overlay.className = styles.chatButtonOverlay
+  
+  const chatIcon = document.createElementNS('http://www.w3.org/2000/svg', 'svg')
+  chatIcon.setAttribute('class', `${styles.chatIcon} chat-icon`)
+  chatIcon.setAttribute('width', '24')
+  chatIcon.setAttribute('height', '24')
+  chatIcon.setAttribute('viewBox', '0 0 24 24')
+  chatIcon.innerHTML = '<path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2z"/>'
+  
+  const closeIcon = document.createElementNS('http://www.w3.org/2000/svg', 'svg')
+  closeIcon.setAttribute('class', `${styles.closeIcon} close-icon`)
+  closeIcon.setAttribute('width', '24')
+  closeIcon.setAttribute('height', '24')
+  closeIcon.setAttribute('viewBox', '0 0 24 24')
+  closeIcon.innerHTML = '<path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/>'
+  
+  button.appendChild(overlay)
+  button.appendChild(chatIcon)
+  button.appendChild(closeIcon)
+  chatButtonContainer.appendChild(button)
   
   document.body.appendChild(chatButtonContainer)
   
-  chatButtonContainer.querySelector('button')?.addEventListener('click', toggleChat)
+  button.addEventListener('click', toggleChat)
 }
 
 function toggleChat() {
@@ -48,6 +63,8 @@ function openChatInterface() {
   
   chatContainer = document.createElement('div')
   chatContainer.id = 'lovebug-chat-wrapper'
+  chatContainer.className = styles.chatWrapper
+  
   document.body.appendChild(chatContainer)
   
   chatRoot = ReactDOM.createRoot(chatContainer)
@@ -75,13 +92,13 @@ function closeChatInterface() {
 }
 
 function updateButtonIcon() {
-  const fab = chatButtonContainer?.querySelector('.lovebug-fab')
+  const button = chatButtonContainer?.querySelector('button')
   
-  if (fab) {
+  if (button) {
     if (chatOpen) {
-      fab.classList.add('active')
+      button.classList.add(styles.chatOpen)
     } else {
-      fab.classList.remove('active')
+      button.classList.remove(styles.chatOpen)
     }
   }
 }
@@ -93,10 +110,9 @@ function createFloatingUI(selection: SelectionInfo) {
   
   floatingUIContainer = document.createElement('div')
   floatingUIContainer.id = 'lovebug-floating-ui'
-  floatingUIContainer.style.position = 'absolute'
+  floatingUIContainer.className = styles.floatingUI
   floatingUIContainer.style.left = `${selection.position.x}px`
   floatingUIContainer.style.top = `${selection.position.y}px`
-  floatingUIContainer.style.zIndex = '999999'
   
   document.body.appendChild(floatingUIContainer)
   

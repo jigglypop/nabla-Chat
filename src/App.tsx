@@ -1,7 +1,4 @@
 import { useState, useEffect, useRef } from 'react'
-import './styles/theme.css'
-import './styles/components.css'
-import './App.css'
 
 interface Message {
   id: string
@@ -31,21 +28,25 @@ function App() {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' })
   }
 
-  const handleSend = async () => {
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault()
     if (!input.trim() || isLoading) return
 
     const userMessage: Message = {
       id: Date.now().toString(),
+      content: input,
       role: 'user',
-      content: input.trim(),
       timestamp: new Date()
     }
 
     setMessages(prev => [...prev, userMessage])
     setInput('')
-    setIsLoading(true)
+    
+    simulateResponse()
+  }
 
-    // Simulate AI response
+  const simulateResponse = () => {
+    setIsLoading(true)
     setTimeout(() => {
       const aiMessage: Message = {
         id: (Date.now() + 1).toString(),
@@ -58,79 +59,74 @@ function App() {
     }, 1000)
   }
 
-  const handleKeyPress = (e: React.KeyboardEvent) => {
-    if (e.key === 'Enter' && !e.shiftKey) {
-      e.preventDefault()
-      handleSend()
-    }
-  }
-
   return (
-    <div className="chat-container">
-      <div className="chat-header">
-        <div className="chat-title">
-          <img src="/icon.svg" alt="Lovebug Logo" className="header-logo" />
-          <h1>Lovebug Chat</h1>
+    <div className="lb-max-w-4xl lb-mx-auto lb-h-screen lb-p-4">
+      <div className="lb-bg-bg-secondary lb-rounded-2xl lb-shadow-2xl lb-h-full lb-flex lb-flex-col lb-overflow-hidden">
+        <div className="lb-bg-gradient-to-r lb-from-lovebug-primary lb-via-lovebug-secondary lb-to-lovebug-tertiary lb-p-4 lb-text-white">
+          <div className="lb-flex lb-items-center lb-gap-3">
+            <img src="./icon.svg" alt="Lovebug Logo" className="lb-w-8 lb-h-8" />
+            <h1 className="lb-text-xl lb-font-bold">Lovebug Chat</h1>
+          </div>
+          <div className="lb-flex lb-gap-2 lb-mt-2">
+            <button className="lb-p-2 lb-bg-white/10 lb-rounded-lg lb-backdrop-blur-sm hover:lb-bg-white/20 lb-transition-colors" title="Settings">
+              <svg width="20" height="20" viewBox="0 0 20 20" fill="currentColor">
+                <path d="M8.035 2.23a2 2 0 0 1 3.93 0l.393 1.439a2 2 0 0 0 1.195 1.348l1.452.363a2 2 0 0 1 1.382 3.68l-1.06 1.06a2 2 0 0 0 0 2.828l1.06 1.06a2 2 0 0 1-1.382 3.68l-1.452.363a2 2 0 0 0-1.195 1.348l-.393 1.44a2 2 0 0 1-3.93 0l-.393-1.44a2 2 0 0 0-1.195-1.348l-1.452-.363a2 2 0 0 1-1.382-3.68l1.06-1.06a2 2 0 0 0 0-2.828l-1.06-1.06A2 2 0 0 1 5.39 5.04l1.452-.363a2 2 0 0 0 1.195-1.348l.393-1.44zM10 13a3 3 0 1 0 0-6 3 3 0 0 0 0 6z"/>
+              </svg>
+            </button>
+          </div>
         </div>
-        <div className="header-actions">
-          <button className="icon-button" title="Settings">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
-              <path d="M19.14 12.94c.04-.3.06-.61.06-.94s-.02-.64-.07-.94l2.03-1.58c.18-.14.23-.41.12-.61l-1.92-3.32c-.12-.22-.37-.29-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54c-.04-.24-.24-.41-.48-.41h-3.84c-.24 0-.44.17-.48.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96c-.22-.08-.47 0-.59.22L2.74 8.87c-.11.19-.06.46.12.61l2.03 1.58c-.05.3-.07.64-.07.94s.02.64.07.94l-2.03 1.58c-.18.14-.23.41-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.04.24.24.41.48.41h3.84c.24 0 .44-.17-.48-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.11-.19.06-.46-.12-.61l-2.01-1.58zM12 15.6c-1.98 0-3.6-1.62-3.6-3.6s1.62-3.6 3.6-3.6 3.6 1.62 3.6 3.6-1.62 3.6-3.6 3.6z"/>
-            </svg>
-          </button>
-        </div>
-      </div>
 
-      <div className="chat-messages">
-        {messages.map((message) => (
-          <div key={message.id} className={`message ${message.role}`}>
-            <div className="message-avatar">
-              {message.role === 'user' ? '👤' : '🤖'}
-            </div>
-            <div className="message-bubble">
-              <div className="message-content">{message.content}</div>
-              <div className="message-time">
-                {message.timestamp.toLocaleTimeString([], { 
-                  hour: '2-digit', 
-                  minute: '2-digit' 
-                })}
+        <div className="lb-flex-1 lb-overflow-y-auto lb-p-6 lb-bg-bg-primary">
+          {messages.map((message, index) => (
+            <div key={index} className={`lb-flex lb-gap-3 lb-mb-4 ${message.role === 'user' ? 'lb-flex-row-reverse' : ''}`}>
+              <div className="lb-w-10 lb-h-10 lb-rounded-full lb-bg-gradient-to-br lb-from-lovebug-primary lb-to-lovebug-secondary lb-flex lb-items-center lb-justify-center lb-text-white lb-font-semibold">
+                {message.role === 'user' ? 'U' : 'A'}
+              </div>
+              <div className={`lb-max-w-[70%] lb-rounded-2xl lb-p-4 ${
+                message.role === 'user' 
+                  ? 'lb-bg-accent-primary lb-text-white lb-rounded-br-sm' 
+                  : 'lb-bg-bg-secondary lb-border lb-border-border-secondary lb-rounded-bl-sm'
+              }`}>
+                <div className="lb-text-sm">{message.content}</div>
+                <div className="lb-text-xs lb-mt-1 lb-opacity-70">
+                  {message.timestamp.toLocaleTimeString()}
+                </div>
               </div>
             </div>
-          </div>
-        ))}
-        {isLoading && (
-          <div className="message assistant">
-            <div className="message-avatar">🤖</div>
-            <div className="message-bubble">
-              <div className="typing-indicator">
-                <span></span>
-                <span></span>
-                <span></span>
+          ))}
+          {isLoading && (
+            <div className="lb-flex lb-gap-3 lb-mb-4">
+              <div className="lb-w-10 lb-h-10 lb-rounded-full lb-bg-gradient-to-br lb-from-lovebug-primary lb-to-lovebug-secondary lb-flex lb-items-center lb-justify-center lb-text-white lb-font-semibold">A</div>
+              <div className="lb-max-w-[70%] lb-rounded-2xl lb-rounded-bl-sm lb-p-4 lb-bg-bg-secondary lb-border lb-border-border-secondary">
+                <div className="lb-flex lb-gap-1">
+                  <span className="lb-w-2 lb-h-2 lb-bg-text-secondary lb-rounded-full lb-animate-bounce" style={{ animationDelay: '0ms' }}></span>
+                  <span className="lb-w-2 lb-h-2 lb-bg-text-secondary lb-rounded-full lb-animate-bounce" style={{ animationDelay: '200ms' }}></span>
+                  <span className="lb-w-2 lb-h-2 lb-bg-text-secondary lb-rounded-full lb-animate-bounce" style={{ animationDelay: '400ms' }}></span>
+                </div>
               </div>
             </div>
-          </div>
-        )}
-        <div ref={messagesEndRef} />
-      </div>
+          )}
+          <div ref={messagesEndRef} />
+        </div>
 
-      <div className="chat-input-area">
-        <textarea
-          className="chat-input"
-          value={input}
-          onChange={(e) => setInput(e.target.value)}
-          onKeyPress={handleKeyPress}
-          placeholder="메시지를 입력하세요..."
-          rows={1}
-        />
-        <button 
-          className="send-button" 
-          onClick={handleSend}
-          disabled={!input.trim() || isLoading}
-        >
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
-            <path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/>
-          </svg>
-        </button>
+        <div className="lb-p-4 lb-bg-bg-secondary lb-border-t lb-border-border-secondary">
+          <form onSubmit={handleSubmit} className="lb-flex lb-gap-3">
+            <input
+              className="lb-flex-1 lb-px-4 lb-py-3 lb-bg-bg-tertiary lb-border lb-border-border-primary lb-rounded-xl lb-text-text-primary lb-outline-none focus:lb-border-accent-primary focus:lb-ring-2 focus:lb-ring-accent-primary/20 lb-transition-all"
+              value={input}
+              onChange={(e) => setInput(e.target.value)}
+              placeholder="Type your message..."
+              disabled={isLoading}
+            />
+            <button
+              className="lb-px-6 lb-py-3 lb-bg-gradient-to-r lb-from-lovebug-primary lb-via-lovebug-secondary lb-to-lovebug-tertiary lb-text-white lb-rounded-xl lb-font-medium hover:lb-opacity-90 disabled:lb-opacity-50 lb-transition-opacity"
+              type="submit"
+              disabled={!input.trim() || isLoading}
+            >
+              Send
+            </button>
+          </form>
+        </div>
       </div>
     </div>
   )
