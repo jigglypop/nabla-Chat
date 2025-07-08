@@ -1,17 +1,37 @@
 :root {
   --lb_background: linear-gradient(to right, #12c2e9, #c471ed, #f64f59);
+
   --lb_chat_background: linear-gradient(to bottom right, rgba(18, 194, 233, 0.2), rgba(196, 113, 237, 0.2), rgba(246, 79, 89, 0.2));
-  --header_background: rgba(50, 50, 50, 0.2);
+  --lb_chat_background_dark: rgba(0, 0, 0, 0.5);
+
+  --header_background: rgba(50, 50, 50, 0.1);
   --chatbot_background: rgba(200, 200, 200, 0.5);
   --chatbot_background_black: rgba(0, 0, 0, 0.5);
   --chatbot_background_black_hover: rgba(0, 0, 0, 0.8);
   --status_color: #f64f59;
+  --input_background: rgba(50, 50, 50, 0.05);
 }
+
+
 
 body {
   font-family: 'Pretendard';
 }
 
+.test {
+  position: relative;
+  display: flex;
+  width: 100%;
+  height: 100%;
+}
+
+.block {
+  position: relative;
+  display: flex;
+  width: 100%;
+  height: 100%;
+  padding: 10px;
+}
 .chatButton {
   position: fixed;
   bottom: 20px;

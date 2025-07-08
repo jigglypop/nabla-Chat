@@ -1,7 +1,7 @@
 import React from 'react'
 import ReactDOM from 'react-dom/client'
 import type { Message, SelectionInfo } from './types'
-import FloatingUI from './components/FloatingUI'
+import FloatingUI from './components/FloatingUI/FloatingUI'
 import ChatApp from './components/ChatApp/ChatApp'
 import styles from './content.module.css'
 

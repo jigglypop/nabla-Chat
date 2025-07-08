@@ -2,6 +2,33 @@ import React, { useState, useEffect, useRef } from 'react'
 import styles from './ChatApp.module.css'
 import type { ChatAppProps, Message } from './types'
 
+const modes = ['pink', 'dark'];
+const modeMap = {
+  'pink': "linear-gradient(to bottom right, rgba(18, 194, 233, 0.2), rgba(196, 113, 237, 0.2), rgba(246, 79, 89, 0.2))",
+  'dark' : "rgba(0, 0, 0, 0.5)"
+}
+export function ModeGrid({ mode, setMode }: {
+  mode: string,
+  setMode: any
+}) {
+  return (
+    <div className={styles.gridContainer}>
+      {modes.map(m => (
+        <button
+          key={m}
+          className={`${styles.modeToggle} ${mode === m ? styles.active : ''} ${styles[m]}`}
+          style={
+            {
+              background: modeMap[m]
+            }
+          }
+          onClick={() => setMode(m)}
+        />
+      ))}
+    </div>
+  );
+}
+
 const ChatApp: React.FC<ChatAppProps> = ({ onClose }) => {
   const [messages, setMessages] = useState<Message[]>([
     {
@@ -64,9 +91,10 @@ const ChatApp: React.FC<ChatAppProps> = ({ onClose }) => {
       handleSend()
     }
   }
+  const [mode, setMode] = useState('light'); // 'light' or 'dark'
 
   return (
-    <div className={`${styles.container} ${isMinimized ? styles.minimized : ''}`}>
+    <div className={`${styles.container} ${isMinimized ? styles.minimized : ''}`} data-mode={mode}>
       <div className={styles.header}>
         <div className={styles.headerInfo}>
           <div className={styles.logoWrapper}>
@@ -90,7 +118,9 @@ const ChatApp: React.FC<ChatAppProps> = ({ onClose }) => {
             </span>
           </div>
         </div>
-        <div className={styles.headerActions}>
+          <div className={styles.headerActions}>
+          <ModeGrid mode={mode}  setMode={setMode}/>
+
           <button 
             onClick={() => setIsMinimized(!isMinimized)} 
             className={styles.actionButton}
