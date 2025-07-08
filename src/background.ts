@@ -78,4 +78,15 @@ chrome.storage.onChanged.addListener((changes) => {
   }
 })
 
+chrome.commands.onCommand.addListener((command) => {
+  chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
+    if (tabs[0]?.id) {
+      chrome.tabs.sendMessage(tabs[0].id, {
+        type: 'COMMAND',
+        payload: { command }
+      } as Message)
+    }
+  })
+})
+
 export {} 

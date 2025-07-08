@@ -12,6 +12,36 @@
   "host_permissions": [
     "<all_urls>"
   ],
+  "commands": {
+    "send-to-ai": {
+      "suggested_key": {
+        "default": "Ctrl+Shift+A",
+        "mac": "Command+Shift+A"
+      },
+      "description": "선택한 텍스트를 AI로 보내기"
+    },
+    "toggle-chat": {
+      "suggested_key": {
+        "default": "Ctrl+Shift+L",
+        "mac": "Command+Shift+L"
+      },
+      "description": "채팅창 열기/닫기"
+    },
+    "resize-larger": {
+      "suggested_key": {
+        "default": "Ctrl+Shift+Up",
+        "mac": "Command+Shift+Up"
+      },
+      "description": "채팅창 크게"
+    },
+    "resize-smaller": {
+      "suggested_key": {
+        "default": "Ctrl+Shift+Down",
+        "mac": "Command+Shift+Down"
+      },
+      "description": "채팅창 작게"
+    }
+  },
   "action": {
     "default_popup": "index.html",
     "default_icon": {

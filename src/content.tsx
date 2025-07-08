@@ -11,6 +11,7 @@ let chatRoot: ReactDOM.Root | null = null
 let chatContainer: HTMLElement | null = null
 let chatButtonContainer: HTMLElement | null = null
 let chatOpen = false
+let currentWindowSize: 'small' | 'medium' | 'large' = 'medium'
 
 function createChatButton() {
   if (chatButtonContainer) return
@@ -48,7 +49,7 @@ function toggleChat() {
   }
 }
 
-function openChatInterface() {
+function openChatInterface(selectedText?: string) {
   removeFloatingUI()
   if (chatContainer) return
   chatContainer = document.createElement('div')
@@ -58,11 +59,23 @@ function openChatInterface() {
   chatRoot = ReactDOM.createRoot(chatContainer)
   chatRoot.render(
     <React.StrictMode>
-      <ChatApp onClose={closeChatInterface} />
+      <ChatApp 
+        onClose={closeChatInterface} 
+        windowSize={currentWindowSize}
+      />
     </React.StrictMode>
   )
   chatOpen = true
   updateButtonIcon()
+  
+  if (selectedText) {
+    setTimeout(() => {
+      window.postMessage({
+        type: 'SEND_TO_CHAT',
+        text: selectedText
+      }, '*')
+    }, 300)
+  }
 }
 
 function closeChatInterface() {
@@ -154,11 +167,56 @@ document.addEventListener('mousedown', (e) => {
   }
 })
 
+function resizeChatWindow(direction: 'larger' | 'smaller') {
+  if (!chatOpen || !chatRoot) return
+  
+  const sizes: Array<'small' | 'medium' | 'large'> = ['small', 'medium', 'large']
+  const currentIndex = sizes.indexOf(currentWindowSize)
+  
+  if (direction === 'larger' && currentIndex < sizes.length - 1) {
+    currentWindowSize = sizes[currentIndex + 1]
+  } else if (direction === 'smaller' && currentIndex > 0) {
+    currentWindowSize = sizes[currentIndex - 1]
+  }
+  
+  chatRoot.render(
+    <React.StrictMode>
+      <ChatApp 
+        onClose={closeChatInterface} 
+        windowSize={currentWindowSize}
+      />
+    </React.StrictMode>
+  )
+}
+
 chrome.runtime.onMessage.addListener((message: Message) => {
   if (message.type === 'SELECTION_CHANGED' && message.payload?.selectedText) {
     const selection = getSelectionInfo()
     if (selection) {
       createFloatingUI(selection)
+    }
+  } else if (message.type === 'COMMAND' && message.payload?.command) {
+    const command = message.payload.command
+    
+    switch (command) {
+      case 'send-to-ai':
+        const selection = window.getSelection()?.toString().trim()
+        if (selection) {
+          openChatInterface(selection)
+        }
+        break
+        
+      case 'toggle-chat':
+        toggleChat()
+        break
+        
+      case 'resize-larger':
+        resizeChatWindow('larger')
+        break
+        
+      case 'resize-smaller':
+        resizeChatWindow('smaller')
+        break
     }
   }
 })

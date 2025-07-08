@@ -7,12 +7,13 @@ export interface Feature {
 }
 
 export interface Message {
-  type: 'SELECTION_CHANGED' | 'EXECUTE_FEATURE' | 'GET_FEATURES' | 'CLOSE_FLOATING_UI'
+  type: 'SELECTION_CHANGED' | 'GET_FEATURES' | 'EXECUTE_FEATURE' | 'COMMAND'
   payload?: {
     selectedText?: string
     position?: { x: number; y: number }
     featureId?: string
     result?: string
+    command?: string
   }
 }
 

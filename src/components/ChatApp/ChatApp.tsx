@@ -2,34 +2,70 @@ import React, { useState, useEffect, useRef } from 'react'
 import styles from './ChatApp.module.css'
 import type { ChatAppProps, Message } from './types'
 
-const modes = ['pink', 'dark'];
-const modeMap = {
-  'pink': "linear-gradient(to bottom right, rgba(18, 194, 233, 0.2), rgba(196, 113, 237, 0.2), rgba(246, 79, 89, 0.2))",
-  'dark' : "rgba(0, 0, 0, 0.5)"
-}
-export function ModeGrid({ mode, setMode }: {
-  mode: string,
-  setMode: any
+const backgrounds = [
+  {
+    id: 'gradient1',
+    name: 'Sunset Ocean',
+    value: 'linear-gradient(135deg, rgba(255, 94, 98, 0.3), rgba(255, 154, 0, 0.3), rgba(237, 117, 255, 0.3))',
+    color: '#FF5E62'
+  },
+  {
+    id: 'gradient2',
+    name: 'Aurora Night',
+    value: 'linear-gradient(135deg, rgba(0, 210, 255, 0.3), rgba(146, 141, 255, 0.3), rgba(255, 0, 189, 0.3))',
+    color: '#00D2FF'
+  },
+  {
+    id: 'gradient3',
+    name: 'Forest Dream',
+    value: 'linear-gradient(135deg, rgba(0, 255, 135, 0.3), rgba(96, 239, 255, 0.3), rgba(0, 133, 255, 0.3))',
+    color: '#00FF87'
+  },
+  {
+    id: 'gradient4',
+    name: 'Midnight Purple',
+    value: 'linear-gradient(135deg, rgba(30, 20, 60, 0.9), rgba(60, 30, 90, 0.9), rgba(40, 20, 80, 0.9))',
+    color: '#3C1E5A'
+  },
+  {
+    id: 'gradient5',
+    name: 'Deep Ocean',
+    value: 'linear-gradient(135deg, rgba(10, 25, 47, 0.9), rgba(20, 40, 80, 0.9), rgba(15, 30, 60, 0.9))',
+    color: '#14283D'
+  },
+  {
+    id: 'gradient6',
+    name: 'Black Night',
+    value: 'linear-gradient(135deg, rgba(20, 20, 20, 0.9), rgba(35, 35, 35, 0.9), rgba(10, 10, 10, 0.9))',
+    color: '#1A1A1A'
+  }
+];
+
+export function BackgroundSelector({ background, setBackground }: {
+  background: string,
+  setBackground: (bg: string) => void
 }) {
   return (
-    <div className={styles.gridContainer}>
-      {modes.map(m => (
-        <button
-          key={m}
-          className={`${styles.modeToggle} ${mode === m ? styles.active : ''} ${styles[m]}`}
-          style={
-            {
-              background: modeMap[m]
-            }
-          }
-          onClick={() => setMode(m)}
-        />
-      ))}
+    <div className={styles.backgroundSelector}>
+      <div className={styles.trafficLights}>
+        {backgrounds.map((bg) => (
+          <button 
+            key={bg.id}
+            className={`${styles.trafficLight} ${background === bg.id ? styles.active : ''}`}
+            style={{ background: bg.color }}
+            onClick={() => {
+              setBackground(bg.id);
+              localStorage.setItem('lovebug-background', bg.id);
+            }}
+            title={bg.name}
+          />
+        ))}
+      </div>
     </div>
   );
 }
 
-const ChatApp: React.FC<ChatAppProps> = ({ onClose }) => {
+const ChatApp: React.FC<ChatAppProps> = ({ onClose, windowSize = 'medium' }) => {
   const [messages, setMessages] = useState<Message[]>([
     {
       id: '1',
@@ -43,6 +79,12 @@ const ChatApp: React.FC<ChatAppProps> = ({ onClose }) => {
   const [isMinimized, setIsMinimized] = useState(false)
   const messagesEndRef = useRef<HTMLDivElement>(null)
   const textareaRef = useRef<HTMLTextAreaElement>(null)
+  const [background, setBackground] = useState(() => {
+    return localStorage.getItem('lovebug-background') || 'gradient1';
+  });
+  
+  const currentBg = backgrounds.find(bg => bg.id === background) || backgrounds[0];
+  const isDarkTheme = ['gradient4', 'gradient5', 'gradient6'].includes(background);
 
   useEffect(() => {
     scrollToBottom()
@@ -51,6 +93,22 @@ const ChatApp: React.FC<ChatAppProps> = ({ onClose }) => {
   useEffect(() => {
     adjustTextareaHeight()
   }, [input])
+
+  useEffect(() => {
+    // 선택된 텍스트 수신 처리
+    const handleMessage = (event: MessageEvent) => {
+      if (event.data.type === 'SEND_TO_CHAT' && event.data.text) {
+        setInput(event.data.text)
+        // 자동으로 전송
+        setTimeout(() => {
+          handleSend()
+        }, 100)
+      }
+    }
+    
+    window.addEventListener('message', handleMessage)
+    return () => window.removeEventListener('message', handleMessage)
+  }, [input]) // input dependency 추가
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' })
@@ -91,10 +149,13 @@ const ChatApp: React.FC<ChatAppProps> = ({ onClose }) => {
       handleSend()
     }
   }
-  const [mode, setMode] = useState('light'); // 'light' or 'dark'
 
   return (
-    <div className={`${styles.container} ${isMinimized ? styles.minimized : ''}`} data-mode={mode}>
+    <div 
+      className={`${styles.container} ${isMinimized ? styles.minimized : ''} ${styles[windowSize || 'medium']}`} 
+      style={{ '--chat-bg': currentBg.value } as React.CSSProperties}
+      data-theme={isDarkTheme ? 'dark' : 'light'}
+    >
       <div className={styles.header}>
         <div className={styles.headerInfo}>
           <div className={styles.logoWrapper}>
@@ -118,9 +179,8 @@ const ChatApp: React.FC<ChatAppProps> = ({ onClose }) => {
             </span>
           </div>
         </div>
-          <div className={styles.headerActions}>
-          <ModeGrid mode={mode}  setMode={setMode}/>
-
+        <div className={styles.headerActions}>
+          <BackgroundSelector background={background} setBackground={setBackground} />
           <button 
             onClick={() => setIsMinimized(!isMinimized)} 
             className={styles.actionButton}

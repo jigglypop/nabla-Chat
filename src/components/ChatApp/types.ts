@@ -5,6 +5,7 @@ export type Message = {
   timestamp: Date
 }
 
-export type ChatAppProps = {
+export interface ChatAppProps {
   onClose: () => void
+  windowSize?: 'small' | 'medium' | 'large'
 }

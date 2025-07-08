@@ -50,6 +50,23 @@ pnpm run dev
 pnpm run build
 ```
 
+브라우저에서 `http://localhost:5173`을 열어 확장 프로그램을 개발합니다.
+
+### 테스트 환경
+
+개발 서버에서는 다음과 같은 테스트 환경을 제공합니다:
+
+1. **텍스트 드래그 테스트**: 텍스트를 선택하면 Floating UI가 나타납니다
+2. **채팅 버튼 테스트**: 버튼을 클릭하면 채팅창이 열립니다
+3. **크롬 확장 아이콘 시뮬레이션**: 상단의 확장 아이콘을 클릭하면 팝업이 나타납니다
+
+## 빌드
+
+```bash
+# 빌드
+pnpm run build
+```
+
 ### 2. Chrome/Edge에 설치
 
 1. Chrome/Edge 브라우저에서 `chrome://extensions` 또는 `edge://extensions` 접속
@@ -166,3 +183,27 @@ export const myFeature: Feature = {
 ### Tailwind 클래스 미적용
 - `pnpm run build` 재실행
 - `tailwind.config.js`의 content 경로 확인
+
+## 기능 (Features)
+
+- 🎯 **스마트 텍스트 선택**: 웹페이지에서 텍스트를 선택하면 자동으로 플로팅 UI가 나타납니다
+- 🤖 **AI 어시스턴트**: 선택한 텍스트에 대해 다양한 AI 기능을 사용할 수 있습니다
+  - 요약하기
+  - 번역하기
+  - 설명하기
+  - 다시 쓰기
+- 💬 **채팅 인터페이스**: 전체 화면 채팅으로 AI와 대화할 수 있습니다
+- ⚡ **빠른 반응 속도**: 최적화된 렌더링으로 부드러운 사용자 경험
+- 🎨 **아름다운 UI**: 모던하고 직관적인 디자인
+- ⌨️ **키보드 단축키**:
+  - `Ctrl+Shift+A` (Mac: `Cmd+Shift+A`): 선택한 텍스트를 AI로 전송
+  - `Ctrl+Shift+L` (Mac: `Cmd+Shift+L`): 채팅창 열기/닫기
+  - `Ctrl+Shift+Up` (Mac: `Cmd+Shift+Up`): 채팅창 크게
+  - `Ctrl+Shift+Down` (Mac: `Cmd+Shift+Down`): 채팅창 작게
+- 🎨 **배경 테마**: Mac 스타일 신호등 버튼으로 6가지 배경 중 선택 가능
+  - Sunset Ocean (분홍-주황-보라)
+  - Aurora Night (하늘-보라-분홍)
+  - Forest Dream (초록-하늘-파랑)
+  - Midnight Purple (진한 보라)
+  - Deep Ocean (진한 파랑)
+  - Black Night (진한 검정)
