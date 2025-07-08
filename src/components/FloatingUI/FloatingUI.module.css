@@ -2,6 +2,7 @@
 .compactContainer {
   position: relative;
   display: inline-block;
+  pointer-events: auto;
 }
 .compactButton {
   width: 36px;
@@ -17,6 +18,7 @@
   cursor: pointer;
   transition: all 0.2s ease;
   color: white;
+  pointer-events: auto;
 }
 .compactButton:hover {
   transform: scale(1.1);

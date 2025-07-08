@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useRef } from 'react'
 import styles from './FloatingUI.module.css'
 
 interface FloatingUIProps {
@@ -9,6 +9,8 @@ interface FloatingUIProps {
 const FloatingUI: React.FC<FloatingUIProps> = ({ selectedText, onClose }) => {
   const [isExpanded, setIsExpanded] = useState(false)
   const [isCtrlPressed, setIsCtrlPressed] = useState(false)
+  const [isMouseOver, setIsMouseOver] = useState(false)
+  const containerRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -21,6 +23,9 @@ const FloatingUI: React.FC<FloatingUIProps> = ({ selectedText, onClose }) => {
     const handleKeyUp = (e: KeyboardEvent) => {
       if (!e.ctrlKey && !e.metaKey) {
         setIsCtrlPressed(false)
+        if (!isMouseOver) {
+          setIsExpanded(false)
+        }
       }
     }
     
@@ -39,13 +44,30 @@ const FloatingUI: React.FC<FloatingUIProps> = ({ selectedText, onClose }) => {
       window.removeEventListener('keyup', handleKeyUp)
       window.removeEventListener('message', handleMessage)
     }
-  }, [])
+  }, [isMouseOver])
 
-  if (!isExpanded && !isCtrlPressed) {
+  const handleMouseEnter = () => {
+    setIsMouseOver(true)
+    setIsExpanded(true)
+  }
+
+  const handleMouseLeave = () => {
+    setIsMouseOver(false)
+    if (!isCtrlPressed) {
+      setTimeout(() => {
+        if (!isMouseOver && !isCtrlPressed) {
+          setIsExpanded(false)
+        }
+      }, 300)
+    }
+  }
+
+  if (!isExpanded) {
     return (
       <div 
+        ref={containerRef}
         className={styles.compactContainer}
-        onMouseEnter={() => setIsExpanded(true)}
+        onMouseEnter={handleMouseEnter}
       >
         <div className={styles.compactButton}>
           <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
@@ -59,8 +81,10 @@ const FloatingUI: React.FC<FloatingUIProps> = ({ selectedText, onClose }) => {
 
   return (
     <div 
+      ref={containerRef}
       className={styles.container}
-      onMouseLeave={() => !isCtrlPressed && setIsExpanded(false)}
+      onMouseEnter={handleMouseEnter}
+      onMouseLeave={handleMouseLeave}
     >
       <div className={styles.header}>
         <div className={styles.titleWrapper}>

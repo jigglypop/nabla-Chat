@@ -215,3 +215,10 @@ export const myFeature: Feature = {
   - Midnight Purple (진한 보라)
   - Deep Ocean (진한 파랑)
   - Black Night (진한 검정)
+
+### 최근 개선사항
+
+- 채팅창 크기 조절 시 위치 자동 보정
+- 브라우저 창 크기 변경 시 채팅창 자동 조정
+- Floating UI 마우스 호버 안정성 개선
+- 선택된 텍스트 끝 부분에 정확한 위치 표시

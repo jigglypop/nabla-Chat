@@ -148,17 +148,25 @@ const ChatApp: React.FC<ChatAppProps> = ({ onClose }) => {
         // 크기 조절 단축키 처리
         setChatSize((prevSize: { width: number, height: number }) => {
           const step = 50
+          let newWidth, newHeight
+          
           if (event.data.direction === 'larger') {
-            return {
-              width: Math.min(window.innerWidth - 40, prevSize.width + step),
-              height: Math.min(window.innerHeight - 40, prevSize.height + step)
-            }
+            newWidth = Math.min(window.innerWidth - 40, prevSize.width + step)
+            newHeight = Math.min(window.innerHeight - 40, prevSize.height + step)
           } else {
-            return {
-              width: Math.max(320, prevSize.width - step),
-              height: Math.max(400, prevSize.height - step)
-            }
+            newWidth = Math.max(320, prevSize.width - step)
+            newHeight = Math.max(400, prevSize.height - step)
           }
+          
+          // 크기가 변경되면 위치도 조정해야 할 수 있음
+          setChatPosition((prevPos: { x: number, y: number }) => {
+            // 화면 경계를 벗어나지 않도록 위치 조정
+            const newX = Math.min(prevPos.x, window.innerWidth - newWidth)
+            const newY = Math.min(prevPos.y, window.innerHeight - newHeight)
+            return { x: Math.max(0, newX), y: Math.max(0, newY) }
+          })
+          
+          return { width: newWidth, height: newHeight }
         })
       }
     }
@@ -201,15 +209,22 @@ const ChatApp: React.FC<ChatAppProps> = ({ onClose }) => {
         const finalHeight = Math.max(400, Math.min(window.innerHeight - 40, newHeight))
         
         // 위치가 화면 밖으로 나가지 않도록 제한
-        if (finalWidth !== chatSize.width) {
-          newX = Math.max(0, Math.min(window.innerWidth - finalWidth, newX))
+        // left/top 리사이징의 경우에만 위치 조정
+        if (isResizing.includes('left') && finalWidth !== newWidth) {
+          // 최소 크기에 도달했을 때 위치 고정
+          newX = chatPosition.x + (chatSize.width - finalWidth)
         }
-        if (finalHeight !== chatSize.height) {
-          newY = Math.max(0, Math.min(window.innerHeight - finalHeight, newY))
+        if (isResizing.includes('top') && finalHeight !== newHeight) {
+          // 최소 크기에 도달했을 때 위치 고정
+          newY = chatPosition.y + (chatSize.height - finalHeight)
         }
         
+        // 화면 경계 체크
+        const finalX = Math.max(0, Math.min(window.innerWidth - finalWidth, newX))
+        const finalY = Math.max(0, Math.min(window.innerHeight - finalHeight, newY))
+        
         setChatSize({ width: finalWidth, height: finalHeight })
-        setChatPosition({ x: newX, y: newY })
+        setChatPosition({ x: finalX, y: finalY })
       } else if (isDragging) {
         const newX = e.clientX - dragStart.x
         const newY = e.clientY - dragStart.y
@@ -301,6 +316,23 @@ const ChatApp: React.FC<ChatAppProps> = ({ onClose }) => {
   useEffect(() => {
     localStorage.setItem('lovebug-chat-position', JSON.stringify(chatPosition))
   }, [chatPosition])
+  
+  // 브라우저 창 크기 변경 시 채팅창 위치 조정
+  useEffect(() => {
+    const handleResize = () => {
+      setChatPosition((prev: { x: number, y: number }) => ({
+        x: Math.max(0, Math.min(window.innerWidth - chatSize.width, prev.x)),
+        y: Math.max(0, Math.min(window.innerHeight - chatSize.height, prev.y))
+      }))
+      setChatSize((prev: { width: number, height: number }) => ({
+        width: Math.min(window.innerWidth - 40, prev.width),
+        height: Math.min(window.innerHeight - 40, prev.height)
+      }))
+    }
+    
+    window.addEventListener('resize', handleResize)
+    return () => window.removeEventListener('resize', handleResize)
+  }, [chatSize.width, chatSize.height])
 
   return (
     <div 
