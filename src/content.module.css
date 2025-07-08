@@ -36,20 +36,20 @@ body {
   position: fixed;
   bottom: 20px;
   right: 20px;
-  z-index: 999997;
-  width: 56px;
-  height: 56px;
+  width: 60px;
+  height: 60px;
   border-radius: 50%;
-  background: var(--lb_background);
-  box-shadow: 0 10px 15px -3px var(--chatbot_background_black);
+  background: linear-gradient(to bottom right, #12c2e9, #c471ed, #f64f59);
+  border: none;
+  cursor: pointer;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+  z-index: 2147483640;
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  overflow: hidden;
+  padding: 0;
   display: flex;
   align-items: center;
   justify-content: center;
-  cursor: pointer;
-  transition: all 0.15s;
-  border: none;
-  animation: bounce 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55);
-  overflow: hidden;
 }
 .chatButton:hover {
   box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.5);
@@ -93,17 +93,15 @@ body {
 .chatOpen .closeIcon {
   transform: translate(-50%, -50%) rotate(0) scale(1);
 }
+/* chatWrapper는 더 이상 사용하지 않음
 .chatWrapper {
   position: fixed;
-  bottom: 20px;
-  right: 20px;
-  width: 420px;
-  height: 600px;
-  z-index: 2147483647;
-  filter: drop-shadow(0 20px 25px rgba(0, 0, 0, 0.15));
-  animation: slideIn 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  inset: 0;
+  z-index: 2147483646;
+  pointer-events: none;
+}
+.chatWrapper > * {
   pointer-events: auto;
-  transition: all 0.3s ease;
 }
 @media (max-width: 768px) {
   .chatWrapper {
@@ -115,6 +113,7 @@ body {
     max-height: 100vh;
   }
 }
+*/
 .floatingUI {
   position: absolute;
   z-index: 999999;

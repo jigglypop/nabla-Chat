@@ -11,7 +11,6 @@ let chatRoot: ReactDOM.Root | null = null
 let chatContainer: HTMLElement | null = null
 let chatButtonContainer: HTMLElement | null = null
 let chatOpen = false
-let currentWindowSize: 'small' | 'medium' | 'large' = 'medium'
 
 function createChatButton() {
   if (chatButtonContainer) return
@@ -53,15 +52,13 @@ function openChatInterface(selectedText?: string) {
   removeFloatingUI()
   if (chatContainer) return
   chatContainer = document.createElement('div')
-  chatContainer.id = 'lovebug-chat-wrapper'
-  chatContainer.className = styles.chatWrapper
+  chatContainer.id = 'lovebug-chat-app'
   document.body.appendChild(chatContainer)
   chatRoot = ReactDOM.createRoot(chatContainer)
   chatRoot.render(
     <React.StrictMode>
       <ChatApp 
         onClose={closeChatInterface} 
-        windowSize={currentWindowSize}
       />
     </React.StrictMode>
   )
@@ -97,8 +94,10 @@ function updateButtonIcon() {
   if (button) {
     if (chatOpen) {
       button.classList.add(styles.chatOpen)
+      chatButtonContainer!.style.display = 'none'
     } else {
       button.classList.remove(styles.chatOpen)
+      chatButtonContainer!.style.display = 'block'
     }
   }
 }
@@ -111,8 +110,16 @@ function createFloatingUI(selection: SelectionInfo) {
   floatingUIContainer = document.createElement('div')
   floatingUIContainer.id = 'lovebug-floating-ui'
   floatingUIContainer.className = styles.floatingUI
-  floatingUIContainer.style.left = `${selection.position.x}px`
-  floatingUIContainer.style.top = `${selection.position.y}px`
+  
+  const range = window.getSelection()?.getRangeAt(0)
+  if (range) {
+    const rect = range.getBoundingClientRect()
+    floatingUIContainer.style.left = `${rect.right + window.scrollX + 5}px`
+    floatingUIContainer.style.top = `${rect.top + window.scrollY + (rect.height / 2) - 18}px`
+  } else {
+    floatingUIContainer.style.left = `${selection.position.x}px`
+    floatingUIContainer.style.top = `${selection.position.y}px`
+  }
   
   document.body.appendChild(floatingUIContainer)
   
@@ -170,23 +177,10 @@ document.addEventListener('mousedown', (e) => {
 function resizeChatWindow(direction: 'larger' | 'smaller') {
   if (!chatOpen || !chatRoot) return
   
-  const sizes: Array<'small' | 'medium' | 'large'> = ['small', 'medium', 'large']
-  const currentIndex = sizes.indexOf(currentWindowSize)
-  
-  if (direction === 'larger' && currentIndex < sizes.length - 1) {
-    currentWindowSize = sizes[currentIndex + 1]
-  } else if (direction === 'smaller' && currentIndex > 0) {
-    currentWindowSize = sizes[currentIndex - 1]
-  }
-  
-  chatRoot.render(
-    <React.StrictMode>
-      <ChatApp 
-        onClose={closeChatInterface} 
-        windowSize={currentWindowSize}
-      />
-    </React.StrictMode>
-  )
+  window.postMessage({
+    type: 'RESIZE_CHAT',
+    direction: direction
+  }, '*')
 }
 
 chrome.runtime.onMessage.addListener((message: Message) => {
@@ -202,7 +196,17 @@ chrome.runtime.onMessage.addListener((message: Message) => {
       case 'send-to-ai':
         const selection = window.getSelection()?.toString().trim()
         if (selection) {
-          openChatInterface(selection)
+          if (floatingUIContainer) {
+            window.postMessage({ type: 'TOGGLE_FLOATING_UI' }, '*')
+          } else {
+            const selectionInfo = getSelectionInfo()
+            if (selectionInfo) {
+              createFloatingUI(selectionInfo)
+              setTimeout(() => {
+                window.postMessage({ type: 'TOGGLE_FLOATING_UI' }, '*')
+              }, 100)
+            }
+          }
         }
         break
         

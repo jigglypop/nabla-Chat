@@ -139,9 +139,7 @@ function App() {
 
       {/* Chat App */}
       {showChat && (
-        <div className={styles.chatWrapper}>
-          <ChatApp onClose={() => setShowChat(false)} />
-        </div>
+        <ChatApp onClose={() => setShowChat(false)} />
       )}
     </div>
   )

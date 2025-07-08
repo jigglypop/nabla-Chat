@@ -7,5 +7,4 @@ export type Message = {
 
 export interface ChatAppProps {
   onClose: () => void
-  windowSize?: 'small' | 'medium' | 'large'
 }

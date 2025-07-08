@@ -1,0 +1,7 @@
+---
+alwaysApply: true
+---
+
+- 타입은 types로 분리해서 놓을 것
+- any 금지
+- 상수는 분리할 것

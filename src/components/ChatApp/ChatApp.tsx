@@ -65,7 +65,7 @@ export function BackgroundSelector({ background, setBackground }: {
   );
 }
 
-const ChatApp: React.FC<ChatAppProps> = ({ onClose, windowSize = 'medium' }) => {
+const ChatApp: React.FC<ChatAppProps> = ({ onClose }) => {
   const [messages, setMessages] = useState<Message[]>([
     {
       id: '1',
@@ -77,14 +77,55 @@ const ChatApp: React.FC<ChatAppProps> = ({ onClose, windowSize = 'medium' }) => 
   const [input, setInput] = useState('')
   const [isLoading, setIsLoading] = useState(false)
   const [isMinimized, setIsMinimized] = useState(false)
+  const [chatSize, setChatSize] = useState(() => {
+    const saved = localStorage.getItem('lovebug-chat-size')
+    return saved ? JSON.parse(saved) : { width: 420, height: 600 }
+  })
+  const [chatPosition, setChatPosition] = useState(() => {
+    const saved = localStorage.getItem('lovebug-chat-position')
+    if (saved) {
+      const parsed = JSON.parse(saved)
+      // 저장된 위치가 화면 밖에 있는 경우 조정
+      return {
+        x: Math.max(0, Math.min(window.innerWidth - 420, parsed.x)),
+        y: Math.max(0, Math.min(window.innerHeight - 600, parsed.y))
+      }
+    }
+    // 기본 위치: 우측 하단에서 약간 떨어진 곳
+    return {
+      x: typeof window !== 'undefined' ? Math.max(0, window.innerWidth - 440) : 20,
+      y: typeof window !== 'undefined' ? Math.max(0, window.innerHeight - 620) : 20
+    }
+  })
+  const [isResizing, setIsResizing] = useState<string | false>(false)
+  const [isDragging, setIsDragging] = useState(false)
+  const [dragStart, setDragStart] = useState({ x: 0, y: 0 })
   const messagesEndRef = useRef<HTMLDivElement>(null)
   const textareaRef = useRef<HTMLTextAreaElement>(null)
+  const containerRef = useRef<HTMLDivElement>(null)
   const [background, setBackground] = useState(() => {
     return localStorage.getItem('lovebug-background') || 'gradient1';
   });
   
   const currentBg = backgrounds.find(bg => bg.id === background) || backgrounds[0];
   const isDarkTheme = ['gradient4', 'gradient5', 'gradient6'].includes(background);
+
+  useEffect(() => {
+    console.log('ChatApp mounted', { chatSize, chatPosition })
+    // DOM 요소 확인
+    if (containerRef.current) {
+      const rect = containerRef.current.getBoundingClientRect()
+      console.log('ChatApp DOM rect:', rect)
+      console.log('ChatApp computed styles:', window.getComputedStyle(containerRef.current))
+    }
+    
+    // 초기 렌더링 문제 해결을 위해 약간의 지연 후 위치 재설정
+    const timer = setTimeout(() => {
+      setChatPosition(prev => ({ ...prev }))
+    }, 10)
+    
+    return () => clearTimeout(timer)
+  }, [])
 
   useEffect(() => {
     scrollToBottom()
@@ -103,12 +144,103 @@ const ChatApp: React.FC<ChatAppProps> = ({ onClose, windowSize = 'medium' }) => 
         setTimeout(() => {
           handleSend()
         }, 100)
+      } else if (event.data.type === 'RESIZE_CHAT' && event.data.direction) {
+        // 크기 조절 단축키 처리
+        setChatSize((prevSize: { width: number, height: number }) => {
+          const step = 50
+          if (event.data.direction === 'larger') {
+            return {
+              width: Math.min(window.innerWidth - 40, prevSize.width + step),
+              height: Math.min(window.innerHeight - 40, prevSize.height + step)
+            }
+          } else {
+            return {
+              width: Math.max(320, prevSize.width - step),
+              height: Math.max(400, prevSize.height - step)
+            }
+          }
+        })
       }
     }
     
     window.addEventListener('message', handleMessage)
     return () => window.removeEventListener('message', handleMessage)
   }, [input]) // input dependency 추가
+
+  useEffect(() => {
+    const handleMouseMove = (e: MouseEvent) => {
+      if (isResizing) {
+        const containerRect = containerRef.current?.getBoundingClientRect()
+        if (!containerRect) return
+        
+        let newWidth = chatSize.width
+        let newHeight = chatSize.height
+        let newX = chatPosition.x
+        let newY = chatPosition.y
+        
+        // 각 방향별 리사이징 처리
+        if (isResizing.includes('right')) {
+          newWidth = e.clientX - containerRect.left
+        }
+        if (isResizing.includes('left')) {
+          const delta = containerRect.left - e.clientX
+          newWidth = chatSize.width + delta
+          newX = chatPosition.x - delta
+        }
+        if (isResizing.includes('bottom')) {
+          newHeight = e.clientY - containerRect.top
+        }
+        if (isResizing.includes('top')) {
+          const delta = containerRect.top - e.clientY
+          newHeight = chatSize.height + delta
+          newY = chatPosition.y - delta
+        }
+        
+        // 최소/최대 크기 제한
+        const finalWidth = Math.max(320, Math.min(window.innerWidth - 40, newWidth))
+        const finalHeight = Math.max(400, Math.min(window.innerHeight - 40, newHeight))
+        
+        // 위치가 화면 밖으로 나가지 않도록 제한
+        if (finalWidth !== chatSize.width) {
+          newX = Math.max(0, Math.min(window.innerWidth - finalWidth, newX))
+        }
+        if (finalHeight !== chatSize.height) {
+          newY = Math.max(0, Math.min(window.innerHeight - finalHeight, newY))
+        }
+        
+        setChatSize({ width: finalWidth, height: finalHeight })
+        setChatPosition({ x: newX, y: newY })
+      } else if (isDragging) {
+        const newX = e.clientX - dragStart.x
+        const newY = e.clientY - dragStart.y
+        
+        // 화면 밖으로 나가지 않도록 제한
+        setChatPosition({
+          x: Math.max(0, Math.min(window.innerWidth - chatSize.width, newX)),
+          y: Math.max(0, Math.min(window.innerHeight - chatSize.height, newY))
+        })
+      }
+    }
+    
+    const handleMouseUp = () => {
+      setIsResizing(false)
+      setIsDragging(false)
+    }
+    
+    if (isResizing || isDragging) {
+      document.addEventListener('mousemove', handleMouseMove)
+      document.addEventListener('mouseup', handleMouseUp)
+      document.body.style.cursor = isResizing ? (isResizing + '-resize') : 'move'
+      document.body.style.userSelect = 'none'
+    }
+    
+    return () => {
+      document.removeEventListener('mousemove', handleMouseMove)
+      document.removeEventListener('mouseup', handleMouseUp)
+      document.body.style.cursor = ''
+      document.body.style.userSelect = ''
+    }
+  }, [isResizing, isDragging, dragStart, chatSize, chatPosition])
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' })
@@ -150,13 +282,50 @@ const ChatApp: React.FC<ChatAppProps> = ({ onClose, windowSize = 'medium' }) => 
     }
   }
 
+  const handleHeaderMouseDown = (e: React.MouseEvent) => {
+    if ((e.target as HTMLElement).closest('button')) return
+    const rect = containerRef.current?.getBoundingClientRect()
+    if (!rect) return
+    setDragStart({
+      x: e.clientX - rect.left,
+      y: e.clientY - rect.top
+    })
+    setIsDragging(true)
+  }
+
+  // 크기와 위치가 변경될 때마다 저장
+  useEffect(() => {
+    localStorage.setItem('lovebug-chat-size', JSON.stringify(chatSize))
+  }, [chatSize])
+  
+  useEffect(() => {
+    localStorage.setItem('lovebug-chat-position', JSON.stringify(chatPosition))
+  }, [chatPosition])
+
   return (
     <div 
-      className={`${styles.container} ${isMinimized ? styles.minimized : ''} ${styles[windowSize || 'medium']}`} 
-      style={{ '--chat-bg': currentBg.value } as React.CSSProperties}
+      ref={containerRef}
+      className={`${styles.container} ${isMinimized ? styles.minimized : ''}`} 
+      style={{ 
+        '--chat-bg': currentBg.value,
+        width: chatSize.width + 'px',
+        height: isMinimized ? '60px' : chatSize.height + 'px',
+        left: chatPosition.x + 'px',
+        top: chatPosition.y + 'px'
+      } as React.CSSProperties}
       data-theme={isDarkTheme ? 'dark' : 'light'}
     >
-      <div className={styles.header}>
+      {/* 크기 조절 핸들들 */}
+      <div className={`${styles.resizeHandle} ${styles.resizeTop}`} onMouseDown={() => setIsResizing('top')} />
+      <div className={`${styles.resizeHandle} ${styles.resizeRight}`} onMouseDown={() => setIsResizing('right')} />
+      <div className={`${styles.resizeHandle} ${styles.resizeBottom}`} onMouseDown={() => setIsResizing('bottom')} />
+      <div className={`${styles.resizeHandle} ${styles.resizeLeft}`} onMouseDown={() => setIsResizing('left')} />
+      <div className={`${styles.resizeHandle} ${styles.resizeTopLeft}`} onMouseDown={() => setIsResizing('top-left')} />
+      <div className={`${styles.resizeHandle} ${styles.resizeTopRight}`} onMouseDown={() => setIsResizing('top-right')} />
+      <div className={`${styles.resizeHandle} ${styles.resizeBottomLeft}`} onMouseDown={() => setIsResizing('bottom-left')} />
+      <div className={`${styles.resizeHandle} ${styles.resizeBottomRight}`} onMouseDown={() => setIsResizing('bottom-right')} />
+      
+      <div className={styles.header} onMouseDown={handleHeaderMouseDown}>
         <div className={styles.headerInfo}>
           <div className={styles.logoWrapper}>
             <svg width="36" height="36" viewBox="0 0 128 128" fill="currentColor" className={styles.logo}>
