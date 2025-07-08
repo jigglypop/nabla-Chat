@@ -385,6 +385,8 @@ const ChatApp: React.FC<ChatAppProps> = ({ onClose }) => {
           <button 
             onClick={() => setIsMinimized(!isMinimized)} 
             className={styles.actionButton}
+            aria-label={isMinimized ? '최대화' : '최소화'}
+            data-testid="minimize-button"
           >
             <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
               {isMinimized ? (
@@ -397,6 +399,8 @@ const ChatApp: React.FC<ChatAppProps> = ({ onClose }) => {
           <button 
             onClick={onClose} 
             className={styles.actionButton}
+            aria-label="닫기"
+            data-testid="close-button"
           >
             <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
               <path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/>
@@ -455,6 +459,8 @@ const ChatApp: React.FC<ChatAppProps> = ({ onClose }) => {
               onClick={handleSend}
               disabled={!input.trim() || isLoading}
               className={styles.sendButton}
+              aria-label="전송"
+              data-testid="send-button"
             >
               <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
                 <path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/>

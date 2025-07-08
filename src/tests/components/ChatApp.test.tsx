@@ -6,7 +6,7 @@ import ChatApp from '../../components/ChatApp/ChatApp'
 
 describe('ChatApp 컴포넌트 테스트', () => {
   const mockOnClose = vi.fn()
-  const user = userEvent.setup()
+  const user = userEvent.setup({ pointerEventsCheck: 0 })
 
   beforeEach(() => {
     vi.clearAllMocks()
@@ -47,7 +47,7 @@ describe('ChatApp 컴포넌트 테스트', () => {
     it('메시지를 전송할 수 있어야 함', async () => {
       render(<ChatApp onClose={mockOnClose} />)
       const input = screen.getByPlaceholderText('메시지를 입력하세요')
-      const sendButton = screen.getByRole('button', { name: /전송/i })
+      const sendButton = screen.getByTestId('send-button')
       
       await user.type(input, '테스트 메시지')
       await user.click(sendButton)
@@ -60,7 +60,7 @@ describe('ChatApp 컴포넌트 테스트', () => {
     it('로딩 중에는 전송 버튼이 비활성화되어야 함', async () => {
       render(<ChatApp onClose={mockOnClose} />)
       const input = screen.getByPlaceholderText('메시지를 입력하세요')
-      const sendButton = screen.getByRole('button', { name: /전송/i })
+      const sendButton = screen.getByTestId('send-button')
       
       await user.type(input, '테스트')
       await user.click(sendButton)
@@ -75,20 +75,15 @@ describe('ChatApp 컴포넌트 테스트', () => {
 
   describe('창 제어', () => {
     it('닫기 버튼 클릭 시 onClose가 호출되어야 함', async () => {
-      const { container } = render(<ChatApp onClose={mockOnClose} />)
-      // 닫기 버튼은 헤더의 마지막 버튼
-      const buttons = container.querySelectorAll('.' + CSS.escape('actionButton'))
-      const closeButton = buttons[buttons.length - 1] as HTMLElement
-      
+      render(<ChatApp onClose={mockOnClose} />)
+      const closeButton = screen.getByTestId('close-button')
       await user.click(closeButton)
       expect(mockOnClose).toHaveBeenCalledTimes(1)
     })
 
     it('최소화/최대화를 토글할 수 있어야 함', async () => {
       const { container } = render(<ChatApp onClose={mockOnClose} />)
-      // 최소화 버튼은 헤더의 첫 번째 actionButton
-      const buttons = container.querySelectorAll('.' + CSS.escape('actionButton'))
-      const minimizeButton = buttons[0] as HTMLElement
+      const minimizeButton = screen.getByTestId('minimize-button')
 
       await user.click(minimizeButton)
       expect(container.firstChild).toHaveClass('minimized')

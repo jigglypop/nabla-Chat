@@ -4,7 +4,6 @@ import {
   decryptApiKey,
   isAllowedOrigin,
   sanitizeInput,
-  generateNonce,
   generateRequestSignature,
   validateSessionToken,
   maskSensitiveData,
@@ -16,10 +15,8 @@ describe('보안 유틸리티 테스트', () => {
     it('API 키를 암호화하고 복호화할 수 있어야 함', () => {
       const apiKey = 'sk-test-12345'
       const encrypted = encryptApiKey(apiKey)
-      
       expect(encrypted).not.toBe(apiKey)
-      expect(encrypted).toContain('U2FsdGVkX1') // AES 암호화 prefix
-      
+      expect(encrypted).toContain('U2FsdGVkX1') 
       const decrypted = decryptApiKey(encrypted)
       expect(decrypted).toBe(apiKey)
     })
@@ -49,21 +46,18 @@ describe('보안 유틸리티 테스트', () => {
     it('스크립트 태그를 이스케이프해야 함', () => {
       const input = '<script>alert("XSS")</script>Hello'
       const sanitized = sanitizeInput(input)
-      
       expect(sanitized).toBe('&lt;script&gt;alert(&quot;XSS&quot;)&lt;&#x2F;script&gt;Hello')
     })
 
     it('위험한 문자를 이스케이프해야 함', () => {
       const input = '& < > " \' /'
       const sanitized = sanitizeInput(input)
-      
       expect(sanitized).toBe('&amp; &lt; &gt; &quot; &#x27; &#x2F;')
     })
 
     it('일반 텍스트는 변경하지 않아야 함', () => {
       const input = '안녕하세요 Hello 123'
       const sanitized = sanitizeInput(input)
-      
       expect(sanitized).toBe(input)
     })
   })
@@ -72,10 +66,8 @@ describe('보안 유틸리티 테스트', () => {
     it('동일한 데이터에 대해 같은 서명을 생성해야 함', () => {
       const data = { userId: 'user123', action: 'read' }
       const secret = 'secret-key'
-      
       const signature1 = generateRequestSignature(data, secret)
       const signature2 = generateRequestSignature(data, secret)
-      
       expect(signature1).toBe(signature2)
       expect(signature1.length).toBe(64) // SHA256 hex string length
     })

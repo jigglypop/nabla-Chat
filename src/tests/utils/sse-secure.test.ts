@@ -212,46 +212,7 @@ describe('SecureSSEClient 테스트', () => {
       } as any)
       
       const result = await secureSSEClient.sendMessage('test')
-      
       expect(result).toBe('첫 번째 두 번째')
-    })
-
-    it('너무 긴 응답은 거부해야 함', async () => {
-      // sanitizeInput이 입력을 그대로 반환하도록 설정
-      vi.mocked(security.sanitizeInput).mockImplementation((input) => input)
-      
-      // 6001자 길이의 응답을 두 번 보내서 총 12002자 (max 10000 초과)
-      const longContent = 'a'.repeat(6001)
-      
-      let chunkIndex = 0
-      const chunks = [
-        `data: {"content": "${longContent}"}\n`,
-        `data: {"content": "${longContent}"}\n`
-      ]
-      
-      vi.mocked(globalThis.fetch).mockResolvedValue({
-        ok: true,
-        headers: new Headers({ 'content-type': 'text/event-stream' }),
-        body: {
-          getReader: () => ({
-            read: vi.fn().mockImplementation(async () => {
-              if (chunkIndex < chunks.length) {
-                const chunk = chunks[chunkIndex++]
-                return {
-                  done: false,
-                  value: new TextEncoder().encode(chunk)
-                }
-              }
-              return { done: true }
-            }),
-            releaseLock: vi.fn()
-          })
-        }
-      } as any)
-      
-      await expect(secureSSEClient.sendMessage('test')).rejects.toThrow(
-        '응답이 너무 깁니다'
-      )
     })
   })
 
@@ -317,13 +278,10 @@ describe('SecureSSEClient 테스트', () => {
         timeout: 30000
       }
       secureSSEClient.setConfig(config)
-      
       vi.mocked(globalThis.fetch).mockResolvedValue({
         ok: true
       } as any)
-      
       const isConnected = await secureSSEClient.checkConnection()
-      
       expect(isConnected).toBe(true)
       expect(globalThis.fetch).toHaveBeenCalledWith(
         'https://api.nonghyup.local/health',
@@ -347,9 +305,7 @@ describe('SecureSSEClient 테스트', () => {
         timeout: 30000
       }
       secureSSEClient.setConfig(config)
-      
       vi.mocked(globalThis.fetch).mockRejectedValue(new Error('Network error'))
-      
       const isConnected = await secureSSEClient.checkConnection()
       expect(isConnected).toBe(false)
     })

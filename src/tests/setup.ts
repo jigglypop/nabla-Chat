@@ -72,29 +72,25 @@ beforeAll(() => {
   
   // window.getComputedStyle 모킹
   const originalGetComputedStyle = window.getComputedStyle
-  window.getComputedStyle = vi.fn().mockImplementation((element) => {
-    // 실제 요소가 전달되면 기본 스타일 반환
+  window.getComputedStyle = vi.fn().mockImplementation((element, pseudoElt) => {
     if (element) {
-      return {
-        getPropertyValue: vi.fn((property: string) => {
+      const mockStyle = {
+        getPropertyValue: (property: string) => {
           const styles: Record<string, string> = {
             'visibility': 'visible',
             'display': 'block',
-            'width': '420px',
-            'height': '600px',
-            'top': '0px',
-            'left': '0px',
-            'transform': 'none'
+            'pointer-events': 'auto'
           }
-          return styles[property] || '0px'
-        }),
+          return styles[property] || ''
+        },
         visibility: 'visible',
-        display: 'block'
+        display: 'block',
+        pointerEvents: 'auto'
       }
+      return mockStyle
     }
-    // 요소가 없으면 원래 함수 호출
-    return originalGetComputedStyle.call(window, element)
-  }) as any
+    return originalGetComputedStyle(element, pseudoElt)
+  })
   
   // ResizeObserver 모킹
   globalThis.ResizeObserver = vi.fn().mockImplementation(() => ({

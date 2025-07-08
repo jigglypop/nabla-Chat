@@ -145,6 +145,14 @@ describe('Background Script 테스트', () => {
   })
 
   describe('메시지 처리', () => {
+    beforeEach(() => {
+      vi.useFakeTimers()
+    })
+
+    afterEach(() => {
+      vi.useRealTimers()
+    })
+
     it('GET_FEATURES 메시지를 처리해야 함', () => {
       const sendResponse = vi.fn()
       
@@ -202,7 +210,7 @@ describe('Background Script 테스트', () => {
       )
       
       // 비동기 처리를 위해 대기
-      await new Promise(resolve => setTimeout(resolve, 100))
+      await vi.runAllTimersAsync()
       
       expect(sendResponse).toHaveBeenCalled()
     })
