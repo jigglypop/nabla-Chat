@@ -1,16 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react'
 import styles from './ChatApp.module.css'
-
-interface Message {
-  id: string
-  role: 'user' | 'assistant'
-  content: string
-  timestamp: Date
-}
-
-interface ChatAppProps {
-  onClose: () => void
-}
+import type { ChatAppProps, Message } from './types'
 
 const ChatApp: React.FC<ChatAppProps> = ({ onClose }) => {
   const [messages, setMessages] = useState<Message[]>([
@@ -38,7 +28,6 @@ const ChatApp: React.FC<ChatAppProps> = ({ onClose }) => {
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' })
   }
-
   const adjustTextareaHeight = () => {
     if (textareaRef.current) {
       textareaRef.current.style.height = 'auto'
@@ -54,16 +43,14 @@ const ChatApp: React.FC<ChatAppProps> = ({ onClose }) => {
       content: input.trim(),
       timestamp: new Date()
     }
-
     setMessages(prev => [...prev, userMessage])
     setInput('')
     setIsLoading(true)
-
     setTimeout(() => {
       const aiMessage: Message = {
         id: (Date.now() + 1).toString(),
         role: 'assistant',
-        content: 'This is a mock response. Connect to your AI API for real responses!',
+        content: '목업용 대화입니다!',
         timestamp: new Date()
       }
       setMessages(prev => [...prev, aiMessage])
@@ -80,7 +67,6 @@ const ChatApp: React.FC<ChatAppProps> = ({ onClose }) => {
 
   return (
     <div className={`${styles.container} ${isMinimized ? styles.minimized : ''}`}>
-      {/* Header */}
       <div className={styles.header}>
         <div className={styles.headerInfo}>
           <div className={styles.logoWrapper}>
@@ -97,10 +83,10 @@ const ChatApp: React.FC<ChatAppProps> = ({ onClose }) => {
             </svg>
           </div>
           <div>
-            <h3 className={styles.title}>Lovebug Chat</h3>
+            <p className={styles.title}>러브버그챗</p>
             <span className={styles.status}>
               <span className={styles.statusDot}></span>
-              Always here to help
+              연결중
             </span>
           </div>
         </div>
@@ -170,7 +156,7 @@ const ChatApp: React.FC<ChatAppProps> = ({ onClose }) => {
               value={input}
               onChange={(e) => setInput(e.target.value)}
               onKeyPress={handleKeyPress}
-              placeholder="메시지를 입력하세요..."
+              placeholder="메시지를 입력하세요"
               rows={1}
               className={styles.input}
             />

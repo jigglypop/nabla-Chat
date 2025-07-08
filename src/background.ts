@@ -8,14 +8,12 @@ chrome.runtime.onInstalled.addListener(() => {
     title: 'Lovebug Assistant',
     contexts: ['selection']
   })
-  
   chrome.storage.sync.get(['apiEndpoint', 'apiKey'], (result) => {
     if (result.apiEndpoint && result.apiKey) {
       sseClient.setConfig(result.apiEndpoint, result.apiKey)
     }
   })
 })
-
 chrome.contextMenus.onClicked.addListener((info, tab) => {
   if (info.menuItemId === 'lovebug-menu' && tab?.id) {
     chrome.tabs.sendMessage(tab.id, {
@@ -26,7 +24,6 @@ chrome.contextMenus.onClicked.addListener((info, tab) => {
     } as Message)
   }
 })
-
 chrome.runtime.onMessage.addListener((message: Message, _sender, sendResponse) => {
   switch (message.type) {
     case 'GET_FEATURES':
@@ -40,16 +37,13 @@ chrome.runtime.onMessage.addListener((message: Message, _sender, sendResponse) =
         }))
       })
       break
-      
     case 'EXECUTE_FEATURE':
       if (message.payload?.featureId && message.payload?.selectedText) {
         const featureId = message.payload.featureId
         const selectedText = message.payload.selectedText
-        
         chrome.storage.sync.get(['apiEndpoint', 'apiKey'], async (result) => {
           try {
             let response: string
-            
             if (!result.apiEndpoint || !result.apiKey) {
               response = await sseClient.mockStreamResponse(
                 `${featureId}: ${selectedText}`
@@ -61,11 +55,10 @@ chrome.runtime.onMessage.addListener((message: Message, _sender, sendResponse) =
               )
               response = pluginResult.success ? pluginResult.data! : pluginResult.error!
             }
-            
             sendResponse({ result: response })
           } catch (error) {
             sendResponse({ 
-              result: 'Sorry, an error occurred. Please try again.' 
+              result: '죄송합니다. 에러가 발생했습니다. 잠시 후 다시 시도해주세요' 
             })
           }
         })
