@@ -5,3 +5,6 @@ alwaysApply: true
 - 타입은 types로 분리해서 놓을 것
 - any 금지
 - 상수는 분리할 것
+- SOLID원칙을 준수하고 응집도 최대한으로 높일 것
+- 주석 전면 금지, 빈줄 작성 금지
+- 타입은 interface 금지하고 types로 파일로 철저히 분리할 것

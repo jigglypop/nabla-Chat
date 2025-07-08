@@ -3,7 +3,7 @@ import { sseClient } from '../../utils/sse'
 
 export const summarizePlugin: FeaturePlugin = {
   id: 'summarize',
-  name: 'Summarize',
+  name: '요약하기',
   category: 'text',
   icon: '📝',
   description: 'Generate a concise summary of the selected text',

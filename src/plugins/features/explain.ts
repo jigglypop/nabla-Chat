@@ -3,27 +3,23 @@ import { sseClient } from '../../utils/sse'
 
 export const explainPlugin: FeaturePlugin = {
   id: 'explain',
-  name: 'Explain',
+  name: '설명하기',
   category: 'text',
   icon: '💡',
-  description: 'Explain complex text in simple terms',
+  description: 'Get a detailed explanation of the selected text',
   enabled: true,
   
-
   async execute(text: string): Promise<FeatureResult> {
     try {
-      const prompt = `Explain the following text in simple, easy-to-understand terms. Break down complex concepts and provide examples if helpful:\n\n${text}`
+      const prompt = `Please provide a clear and detailed explanation of the following text or concept:\n\n${text}`
       
       const response = await sseClient.sendMessage(prompt, {
-        systemPrompt: 'You are an expert educator who excels at explaining complex topics in simple, accessible language. Use analogies and examples when appropriate.'
+        systemPrompt: 'You are a knowledgeable teacher. Explain concepts clearly and simply, using examples when helpful. Break down complex ideas into understandable parts.'
       })
       
       return {
         success: true,
-        data: response,
-        metadata: {
-          complexityReduction: 'simplified'
-        }
+        data: response
       }
     } catch (error) {
       return {
