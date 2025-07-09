@@ -6,11 +6,9 @@ import { explainPlugin } from './features/explain'
 
 class PluginManager {
     private plugins: Map<string, FeaturePlugin> = new Map()
-
     constructor() {
         this.registerDefaultPlugins()
     }
-
     private registerDefaultPlugins() {
         this.registerPlugin(summarizePlugin)
         this.registerPlugin(translatePlugin)
@@ -42,14 +40,12 @@ class PluginManager {
                 error: `Plugin ${id} not found`
             }
         }
-
         if (!plugin.enabled) {
             return {
                 success: false,
                 error: `Plugin ${id} is disabled`
             }
         }
-
         try {
             return await plugin.execute(text)
         } catch (error) {

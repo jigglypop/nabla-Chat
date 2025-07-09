@@ -1,8 +1,9 @@
 {
   "manifest_version": 3,
-  "name": "Lovebug - AI Assistant",
+  "name": "LOVEBUG- AI Assistant",
   "version": "1.0.0",
-  "description": "AI-powered browser assistant for productivity",
+  "description": "생성형 AI 플랫폼 코드 어시스턴트 - IT신기술융합팀",
+  "author": "염동환",
   "permissions": [
     "activeTab",
     "contextMenus",
@@ -15,29 +16,29 @@
   "commands": {
     "send-to-ai": {
       "suggested_key": {
-        "default": "Ctrl+Shift+A",
-        "mac": "Command+Shift+A"
+        "default": "Ctrl+A",
+        "mac": "Command+A"
       },
       "description": "선택한 텍스트를 AI로 보내기"
     },
     "toggle-chat": {
       "suggested_key": {
-        "default": "Ctrl+Shift+L",
-        "mac": "Command+Shift+L"
+        "default": "Ctrl+L",
+        "mac": "Command+L"
       },
       "description": "채팅창 열기/닫기"
     },
     "resize-larger": {
       "suggested_key": {
-        "default": "Ctrl+Shift+Up",
-        "mac": "Command+Shift+Up"
+        "default": "Ctrl+Up",
+        "mac": "Command+Up"
       },
       "description": "채팅창 크게"
     },
     "resize-smaller": {
       "suggested_key": {
-        "default": "Ctrl+Shift+Down",
-        "mac": "Command+Shift+Down"
+        "default": "Ctrl+Down",
+        "mac": "Command+Down"
       },
       "description": "채팅창 작게"
     }
@@ -45,10 +46,8 @@
   "action": {
     "default_popup": "index.html",
     "default_icon": {
-      "16": "icon.svg",
-      "32": "icon.svg",
-      "48": "icon.svg",
-      "128": "icon.svg"
+      "19": "icons/icon19.png",
+      "48": "icons/icon48.png"
     }
   },
   "background": {
@@ -68,9 +67,7 @@
     }
   ],
   "icons": {
-    "16": "icon.svg",
-    "32": "icon.svg",
-    "48": "icon.svg",
-    "128": "icon.svg"
+    "19": "icons/icon19.png",
+    "48": "icons/icon48.png"
   }
 } 

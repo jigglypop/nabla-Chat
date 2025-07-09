@@ -39,7 +39,6 @@ function App() {
 
     document.addEventListener('mouseup', handleMouseUp)
     document.addEventListener('mousedown', handleMouseDown)
-
     return () => {
       document.removeEventListener('mouseup', handleMouseUp)
       document.removeEventListener('mousedown', handleMouseDown)
@@ -49,7 +48,6 @@ function App() {
   return (
     <div className={styles.testContainer}>
       <h1 className={styles.testTitle}>Lovebug Extension Test</h1>
-      
       {/* 크롬 확장 프로그램 시뮬레이션 */}
       <div className={styles.chromeBar}>
         <span className={styles.chromeBarTitle}>Chrome Browser</span>
