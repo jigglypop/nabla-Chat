@@ -108,7 +108,6 @@ export const NH_CONFIG = {
       apiLimit: 800
     }
   },
-
   // 로깅 설정
   logging: {
     level: 'INFO',
@@ -116,7 +115,6 @@ export const NH_CONFIG = {
     anonymization: true,
     endpoint: 'https://log.nonghyup.local/lovebug'
   },
-
   // UI 설정
   ui: {
     theme: {
@@ -169,13 +167,11 @@ export const createNHApiClient = () => {
     }
   }
 }
-
 // 헬퍼 함수들
 function getCurrentUserDepartment(): string {
   // 실제 구현 시 NH-SSO에서 부서 정보 가져오기
   return localStorage.getItem('nh-department') || 'unknown'
 }
-
 function getSessionToken(): string {
   // 실제 구현 시 NH-SSO 세션 토큰 가져오기
   return localStorage.getItem('nh-session-token') || ''

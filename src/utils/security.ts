@@ -1,11 +1,5 @@
-/**
- * 보안 유틸리티 모듈
- * 은행 환경에 맞는 암호화, 검증, 보안 통신 기능 제공
- */
-
 import crypto from 'crypto-js'
 
-// 환경변수 또는 빌드 시 주입되는 키 (실제로는 더 안전한 방법 사용)
 const ENCRYPTION_KEY = import.meta.env?.VITE_ENCRYPTION_KEY || 'default-key-change-in-production'
 
 /**
@@ -34,14 +28,11 @@ export function decryptApiKey(encryptedKey: string): string {
  */
 export function isAllowedOrigin(origin: string): boolean {
   const allowedOrigins = [
-    'https://company-internal.com',
+    'https://github.com',
     'https://subdomain.company-internal.com',
-    // 사내 도메인 추가
   ]
-  
   // 정확히 일치하거나
   if (allowedOrigins.includes(origin)) return true
-  
   // 허용된 도메인의 서브도메인인 경우
   return allowedOrigins.some(allowed => {
     const domain = allowed.replace('https://', '')
@@ -96,21 +87,17 @@ export function validateSessionToken(token: string): boolean {
     // JWT 토큰 형식 검증 (간단한 예시)
     const parts = token.split('.')
     if (parts.length !== 3) return false
-    
     // 헤더와 페이로드 디코딩
     const header = JSON.parse(atob(parts[0]))
     const payload = JSON.parse(atob(parts[1]))
-    
     // 만료 시간 검증
     if (payload.exp && payload.exp * 1000 < Date.now()) {
       return false
     }
-    
     // 알고리즘 검증
     if (header.alg !== 'HS256' && header.alg !== 'RS256') {
       return false
     }
-    
     return true
   } catch {
     return false

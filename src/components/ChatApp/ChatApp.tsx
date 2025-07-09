@@ -111,19 +111,9 @@ const ChatApp: React.FC<ChatAppProps> = ({ onClose }) => {
   const isDarkTheme = ['gradient4', 'gradient5', 'gradient6'].includes(background);
 
   useEffect(() => {
-    console.log('ChatApp mounted', { chatSize, chatPosition })
-    // DOM 요소 확인
-    if (containerRef.current) {
-      const rect = containerRef.current.getBoundingClientRect()
-      console.log('ChatApp DOM rect:', rect)
-      console.log('ChatApp computed styles:', window.getComputedStyle(containerRef.current))
-    }
-    
-    // 초기 렌더링 문제 해결을 위해 약간의 지연 후 위치 재설정
     const timer = setTimeout(() => {
       setChatPosition(prev => ({ ...prev }))
     }, 10)
-    
     return () => clearTimeout(timer)
   }, [])
 
@@ -136,11 +126,9 @@ const ChatApp: React.FC<ChatAppProps> = ({ onClose }) => {
   }, [input])
 
   useEffect(() => {
-    // 선택된 텍스트 수신 처리
     const handleMessage = (event: MessageEvent) => {
       if (event.data.type === 'SEND_TO_CHAT' && event.data.text) {
         setInput(event.data.text)
-        // 자동으로 전송
         setTimeout(() => {
           handleSend()
         }, 100)

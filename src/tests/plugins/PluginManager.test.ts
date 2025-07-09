@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest'
-import { pluginManager } from '../../plugins/PluginManager'
+import { pluginManager } from '../../plugins/PluginManager.ts'
 import type { FeaturePlugin } from '../../types/features'
 
 describe('PluginManager 테스트', () => {

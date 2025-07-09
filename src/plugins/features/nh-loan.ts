@@ -3,7 +3,7 @@
  */
 
 import type { FeaturePlugin, FeatureResult } from '../../types/features'
-import { NH_CONFIG, createNHApiClient } from '../../config/nh-config'
+import { NH_CONFIG, createNHApiClient } from '../../config'
 
 export const nhLoanPlugin: FeaturePlugin = {
   id: 'nh-loan-analysis',
@@ -24,10 +24,8 @@ export const nhLoanPlugin: FeaturePlugin = {
       }
 
       const client = createNHApiClient()
-      
       // 문서 유형 자동 감지
       const docType = detectDocumentType(text)
-      
       // 농협 AI API 호출
       const response = await fetch(`${NH_CONFIG.api.base}${NH_CONFIG.features.loan.endpoints.analyze}`, {
         method: 'POST',
@@ -46,12 +44,9 @@ export const nhLoanPlugin: FeaturePlugin = {
       if (!response.ok) {
         throw new Error(`API 오류: ${response.status}`)
       }
-
       const result = await response.json()
-
       // 결과 포맷팅
       const formattedResult = formatLoanAnalysis(result, docType)
-      
       return {
         success: true,
         data: formattedResult
@@ -76,22 +71,18 @@ function detectDataClassification(text: string): string {
     /\d{3}-\d{2}-\d{5}/, // 사업자번호
     /\d{4}-\d{4}-\d{4}-\d{4}/, // 카드번호
   ]
-  
   for (const pattern of sensitivePatterns) {
     if (pattern.test(text)) {
       return '극비'
     }
   }
-  
   // 키워드 기반 분류
   if (text.includes('영업전략') || text.includes('경영계획')) {
     return '대외비'
   }
-  
   if (text.includes('직원') || text.includes('내부')) {
     return '내부용'
   }
-  
   return '공개'
 }
 

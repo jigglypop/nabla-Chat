@@ -12,11 +12,9 @@ export const translatePlugin: FeaturePlugin = {
   async execute(text: string): Promise<FeatureResult> {
     try {
       const prompt = `Please translate the following text to Korean (or to English if it's already in Korean):\n\n${text}`
-      
       const response = await sseClient.sendMessage(prompt, {
         systemPrompt: 'You are a professional translator. Provide accurate and natural translations while preserving the original meaning and tone.'
       })
-      
       return {
         success: true,
         data: response

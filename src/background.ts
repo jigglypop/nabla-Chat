@@ -1,5 +1,5 @@
 import type { Message } from './types'
-import { pluginManager } from './plugins/PluginManager'
+import { pluginManager } from './plugins/PluginManager.ts'
 import { sseClient } from './utils/sse'
 
 chrome.runtime.onInstalled.addListener(() => {
