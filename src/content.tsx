@@ -116,11 +116,18 @@ function createFloatingUI(selection: SelectionInfo) {
   floatingUIContainer = document.createElement('div')
   floatingUIContainer.id = 'lovebug-floating-ui'
   floatingUIContainer.className = styles.floatingUI
-  floatingUIContainer.style.left = `${selection.position.x}px`
-  floatingUIContainer.style.top = `${selection.position.y}px`
-
+  floatingUIContainer.style.position = 'fixed'
+  
+  // 초기 위치 설정 (마우스 커서 기준)
+  let left = selection.position.x - window.scrollX
+  let top = selection.position.y - window.scrollY
+  
+  // 임시로 렌더링하여 크기 측정
+  floatingUIContainer.style.visibility = 'hidden'
+  floatingUIContainer.style.left = '0px'
+  floatingUIContainer.style.top = '0px'
   document.body.appendChild(floatingUIContainer)
-
+  
   floatingUIRoot = ReactDOM.createRoot(floatingUIContainer)
   floatingUIRoot.render(
     <React.StrictMode>
@@ -132,6 +139,39 @@ function createFloatingUI(selection: SelectionInfo) {
       />
     </React.StrictMode>
   )
+  
+  // 렌더링 후 크기를 기반으로 위치 조정
+  setTimeout(() => {
+    if (!floatingUIContainer) return
+    
+    const rect = floatingUIContainer.getBoundingClientRect()
+    const viewportWidth = window.innerWidth
+    const viewportHeight = window.innerHeight
+    
+    // 화면 오른쪽을 벗어나는 경우
+    if (left + rect.width > viewportWidth - 10) {
+      left = viewportWidth - rect.width - 10
+    }
+    
+    // 화면 아래를 벗어나는 경우
+    if (top + rect.height > viewportHeight - 10) {
+      top = viewportHeight - rect.height - 10
+    }
+    
+    // 화면 왼쪽을 벗어나는 경우
+    if (left < 10) {
+      left = 10
+    }
+    
+    // 화면 위를 벗어나는 경우
+    if (top < 10) {
+      top = 10
+    }
+    
+    floatingUIContainer.style.left = `${left}px`
+    floatingUIContainer.style.top = `${top}px`
+    floatingUIContainer.style.visibility = 'visible'
+  }, 0)
 }
 
 function removeFloatingUI() {
@@ -147,6 +187,7 @@ function removeFloatingUI() {
 }
 
 document.addEventListener('mouseup', (e) => {
+  // Do nothing if the click is inside the floating UI
   if (floatingUIContainer && floatingUIContainer.contains(e.target as Node)) {
     return
   }
@@ -155,6 +196,7 @@ document.addEventListener('mouseup', (e) => {
     let selectionInfo: SelectionInfo | null = null
     const activeEl = document.activeElement
 
+    // Logic for input fields
     if (activeEl && (activeEl.tagName === 'INPUT' || activeEl.tagName === 'TEXTAREA')) {
       const inputEl = activeEl as HTMLInputElement | HTMLTextAreaElement
       const start = inputEl.selectionStart
@@ -163,28 +205,25 @@ document.addEventListener('mouseup', (e) => {
       if (start !== null && end !== null && start !== end) {
         const selectedText = inputEl.value.substring(start, end).trim()
         if (selectedText) {
-          const rect = inputEl.getBoundingClientRect()
           selectionInfo = {
             text: selectedText,
             position: {
-              x: e.clientX + window.scrollX,
-              y: rect.bottom + window.scrollY + 5,
+              x: e.pageX + 5, // Position relative to cursor
+              y: e.pageY + 5,
             },
           }
         }
       }
-    } else {
+    } else { // Logic for general text
       const selection = window.getSelection()
       if (selection && !selection.isCollapsed) {
         const selectedText = selection.toString().trim()
         if (selectedText) {
-          const range = selection.getRangeAt(0)
-          const rect = range.getBoundingClientRect()
           selectionInfo = {
             text: selectedText,
             position: {
-              x: rect.left + window.scrollX,
-              y: rect.bottom + window.scrollY + 5,
+              x: e.pageX + 5, // Position relative to cursor
+              y: e.pageY + 5,
             },
           }
         }
@@ -194,7 +233,6 @@ document.addEventListener('mouseup', (e) => {
     if (selectionInfo && !chatOpen) {
       createFloatingUI(selectionInfo)
     } else if (!selectionInfo) {
-      // 텍스트 선택이 해제되면 UI를 닫습니다.
       const targetIsFloatingUI = floatingUIContainer && floatingUIContainer.contains(e.target as Node);
       if (!targetIsFloatingUI) {
          removeFloatingUI();

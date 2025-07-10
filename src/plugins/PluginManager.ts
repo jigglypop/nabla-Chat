@@ -7,16 +7,47 @@ import { explainPlugin } from './features/explain';
 class PluginManager {
   private plugins: Map<string, FeaturePlugin> = new Map();
 
-  constructor() {
+  private constructor() {
     this.registerDefaultPlugins();
   }
 
+  static async create() {
+    const manager = new PluginManager();
+    await manager.loadState();
+    return manager;
+  }
+
   private registerDefaultPlugins() {
-    // 정적으로 플러그인들을 등록
     this.registerPlugin(summarizePlugin);
     this.registerPlugin(translatePlugin);
     this.registerPlugin(rewritePlugin);
     this.registerPlugin(explainPlugin);
+  }
+
+  async loadState() {
+    try {
+      const storage = await chrome.storage.sync.get('plugin_states');
+      const states = storage.plugin_states || {};
+      for (const [id, plugin] of this.plugins.entries()) {
+        if (states[id] !== undefined) {
+          plugin.enabled = states[id];
+        }
+      }
+    } catch (e) {
+      console.error('Error loading plugin states:', e);
+    }
+  }
+
+  async saveState() {
+    const states: { [key: string]: boolean } = {};
+    for (const [id, plugin] of this.plugins.entries()) {
+      states[id] = plugin.enabled;
+    }
+    try {
+      await chrome.storage.sync.set({ plugin_states: states });
+    } catch (e) {
+      console.error('Error saving plugin states:', e);
+    }
   }
 
   registerPlugin(plugin: FeaturePlugin) {
@@ -35,30 +66,32 @@ class PluginManager {
     return this.getAllPlugins().filter(p => p.enabled);
   }
 
+  togglePlugin(id: string): FeaturePlugin | undefined {
+    const plugin = this.getPlugin(id);
+    if (plugin) {
+      plugin.enabled = !plugin.enabled;
+      this.saveState(); // state is saved on toggle
+      return plugin;
+    }
+    return undefined;
+  }
+
   async executePlugin(id: string, text: string): Promise<FeatureResult> {
     const plugin = this.getPlugin(id);
     if (!plugin) {
-      return {
-        success: false,
-        error: `Plugin ${id} not found`,
-      };
+      return { success: false, error: `Plugin ${id} not found` };
     }
     if (!plugin.enabled) {
-      return {
-        success: false,
-        error: `Plugin ${id} is disabled`,
-      };
+      return { success: false, error: `Plugin ${id} is disabled` };
     }
     try {
       return await plugin.execute(text);
     } catch (error) {
-      return {
-        success: false,
-        error: error instanceof Error ? error.message : 'Unknown error',
-      };
+      return { success: false, error: error instanceof Error ? error.message : 'Unknown error' };
     }
   }
 }
 
-export const pluginManager = new PluginManager();
-export const getPluginManager = async () => pluginManager; 
+export const pluginManagerPromise = PluginManager.create();
+
+export const getPluginManager = () => pluginManagerPromise; 

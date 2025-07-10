@@ -8,8 +8,14 @@ export default defineConfig({
   plugins: [react(), crx({ manifest })],
   css: {
     modules: {
-      localsConvention: 'camelCase',
-      generateScopedName: '[name]__[local]___[hash:base64:5]'
-    }
-  }
+      localsConvention: 'camelCaseOnly',
+    },
+  },
+  server: {
+    port: 5173,
+    strictPort: true,
+    hmr: {
+      port: 5173,
+    },
+  },
 })

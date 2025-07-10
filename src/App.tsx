@@ -4,12 +4,11 @@ function App() {
   return (
     <div className="App">
       <header className="App-header">
-        <h1>Lovebug Extension Test Page</h1>
-        <p>Use the input fields below to test the floating UI.</p>
+        <h1>LOVEBUG 플러그인 테스트</h1>
       </header>
       <main className="App-main">
         <div className="input-container">
-          <label htmlFor="test-input">Test Input</label>
+          <label htmlFor="test-input">Input 테스트</label>
           <input
             id="test-input"
             type="text"
@@ -18,7 +17,7 @@ function App() {
           />
         </div>
         <div className="input-container">
-          <label htmlFor="test-textarea">Test Textarea</label>
+          <label htmlFor="test-textarea">Textarea 테스트</label>
           <textarea
             id="test-textarea"
             rows={8}

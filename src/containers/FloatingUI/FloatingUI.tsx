@@ -24,6 +24,8 @@ const FloatingUI: React.FC<FloatingUIProps> = ({ selectedText, onClose, onExecut
   });
   const containerRef = useRef<HTMLDivElement>(null);
 
+  const truncatedText = selectedText.length > 100 ? `${selectedText.substring(0, 100)}...` : selectedText;
+
   const currentBg = backgrounds.find(bg => bg.id === background) || backgrounds[0];
   const isDarkTheme = ['gradient4', 'gradient5', 'gradient6'].includes(background);
 
@@ -164,6 +166,10 @@ const FloatingUI: React.FC<FloatingUIProps> = ({ selectedText, onClose, onExecut
             </svg>
           </button>
         </div>
+      </div>
+
+      <div className={styles.selectedTextContainer}>
+        <p className={styles.selectedText}>{truncatedText}</p>
       </div>
       
       <div className={styles.floatingActions}>
