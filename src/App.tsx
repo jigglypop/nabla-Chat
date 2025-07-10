@@ -9,7 +9,6 @@ function App() {
   const [showChat, setShowChat] = useState(false)
   const [selectedText, setSelectedText] = useState("")
   const [floatingPosition, setFloatingPosition] = useState({ x: 0, y: 0 })
-  const [showPopup, setShowPopup] = useState(false)
   const textAreaRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
@@ -48,23 +47,6 @@ function App() {
     <div className={styles.testContainer}>
       <h1 className={styles.testTitle}>LOVEBUG</h1>
       {/* Extension Popup */}
-      {showPopup && (
-        <div className={styles.extensionPopup}>
-          <div className={styles.popupHeader}>
-            <h3>Lovebug Assistant</h3>
-            <button onClick={() => setShowPopup(false)}>×</button>
-          </div>
-          <div className={styles.popupContent}>
-            <p>AI-powered browser assistant</p>
-            <div className={styles.popupActions}>
-              <button onClick={() => { setShowChat(true); setShowPopup(false); }}>
-                Open Chat
-              </button>
-              <button>Settings</button>
-            </div>
-          </div>
-        </div>
-      )}
       {/* 테스트 영역 */}
       <div className={styles.testContent}>
         <div className={styles.testSection}>

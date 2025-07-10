@@ -1,10 +1,4 @@
-export type Message = {
-  id: string
-  role: 'user' | 'assistant'
-  content: string
-  timestamp: Date
-}
-
-export interface ChatAppProps {
-  onClose: () => void
+export type BGSelector = {
+  background: string,
+  setBackground: (bg: string) => void
 }

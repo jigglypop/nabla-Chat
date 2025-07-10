@@ -4,7 +4,7 @@
 }
 .trafficLights {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: repeat(2, 1fr);
   grid-template-rows: repeat(2, 1fr);
   gap: 6px;
   align-items: center;
@@ -35,90 +35,4 @@
   border: 2px solid currentColor;
   opacity: 0.5;
 }
-.trafficLight.red {
-  background: #FF5F57;
-}
-.trafficLight.yellow {
-  background: #FFBD2E;
-}
-.trafficLight.green {
-  background: #28CA42;
-}
-.trafficLight.red:hover {
-  background: #FF3B30;
-}
-.trafficLight.yellow:hover {
-  background: #FFA500;
-}
-.trafficLight.green:hover {
-  background: #00C851;
-}
-
-.resizeHandle {
-  position: absolute;
-  z-index: 10;
-}
-.resizeHandle::before,
-.resizeHandle::after {
-  display: none;
-}
-/* 가장자리 핸들 */
-.resizeTop {
-  top: 0;
-  left: 10px;
-  right: 10px;
-  height: 6px;
-  cursor: n-resize;
-}
-.resizeRight {
-  top: 10px;
-  right: 0;
-  bottom: 10px;
-  width: 6px;
-  cursor: e-resize;
-}
-.resizeBottom {
-  bottom: 0;
-  left: 10px;
-  right: 10px;
-  height: 6px;
-  cursor: s-resize;
-}
-.resizeLeft {
-  top: 10px;
-  left: 0;
-  bottom: 10px;
-  width: 6px;
-  cursor: w-resize;
-}
-/* 모서리 핸들 */
-.resizeTopLeft {
-  top: 0;
-  left: 0;
-  width: 10px;
-  height: 10px;
-  cursor: nw-resize;
-}
-.resizeTopRight {
-  top: 0;
-  right: 0;
-  width: 10px;
-  height: 10px;
-  cursor: ne-resize;
-}
-.resizeBottomLeft {
-  bottom: 0;
-  left: 0;
-  width: 10px;
-  height: 10px;
-  cursor: sw-resize;
-}
-.resizeBottomRight {
-  bottom: 0;
-  right: 0;
-  width: 10px;
-  height: 10px;
-  cursor: se-resize;
-}
-
 

@@ -18,18 +18,6 @@ export const backgrounds = [
     color: '#00FF87'
   },
   {
-    id: 'gradient4',
-    name: 'Midnight Purple',
-    value: 'linear-gradient(135deg, rgba(30, 20, 60, 0.9), rgba(60, 30, 90, 0.9), rgba(40, 20, 80, 0.9))',
-    color: '#3C1E5A'
-  },
-  {
-    id: 'gradient5',
-    name: 'Deep Ocean',
-    value: 'linear-gradient(135deg, rgba(10, 25, 47, 0.9), rgba(20, 40, 80, 0.9), rgba(15, 30, 60, 0.9))',
-    color: '#14283D'
-  },
-  {
     id: 'gradient6',
     name: 'Black Night',
     value: 'linear-gradient(135deg, rgba(20, 20, 20, 0.9), rgba(35, 35, 35, 0.9), rgba(10, 10, 10, 0.9))',
