@@ -1,8 +1,69 @@
 import React, { useState, useEffect, useRef } from 'react'
 import styles from './ChatApp.module.css'
 import type { ChatAppProps, Message } from './types'
-import { BackgroundSelector } from '../BGSelector'
-import { backgrounds } from '../BGSelector/constants'
+
+const backgrounds = [
+  {
+    id: 'gradient1',
+    name: 'Sunset Ocean',
+    value: 'linear-gradient(135deg, rgba(255, 94, 98, 0.3), rgba(255, 154, 0, 0.3), rgba(237, 117, 255, 0.3))',
+    color: '#FF5E62'
+  },
+  {
+    id: 'gradient2',
+    name: 'Aurora Night',
+    value: 'linear-gradient(135deg, rgba(0, 210, 255, 0.3), rgba(146, 141, 255, 0.3), rgba(255, 0, 189, 0.3))',
+    color: '#00D2FF'
+  },
+  {
+    id: 'gradient3',
+    name: 'Forest Dream',
+    value: 'linear-gradient(135deg, rgba(0, 255, 135, 0.3), rgba(96, 239, 255, 0.3), rgba(0, 133, 255, 0.3))',
+    color: '#00FF87'
+  },
+  {
+    id: 'gradient4',
+    name: 'Midnight Purple',
+    value: 'linear-gradient(135deg, rgba(30, 20, 60, 0.9), rgba(60, 30, 90, 0.9), rgba(40, 20, 80, 0.9))',
+    color: '#3C1E5A'
+  },
+  {
+    id: 'gradient5',
+    name: 'Deep Ocean',
+    value: 'linear-gradient(135deg, rgba(10, 25, 47, 0.9), rgba(20, 40, 80, 0.9), rgba(15, 30, 60, 0.9))',
+    color: '#14283D'
+  },
+  {
+    id: 'gradient6',
+    name: 'Black Night',
+    value: 'linear-gradient(135deg, rgba(20, 20, 20, 0.9), rgba(35, 35, 35, 0.9), rgba(10, 10, 10, 0.9))',
+    color: '#1A1A1A'
+  }
+];
+
+export function BackgroundSelector({ background, setBackground }: {
+  background: string,
+  setBackground: (bg: string) => void
+}) {
+  return (
+    <div className={styles.backgroundSelector}>
+      <div className={styles.trafficLights}>
+        {backgrounds.map((bg) => (
+          <button 
+            key={bg.id}
+            className={`${styles.trafficLight} ${background === bg.id ? styles.active : ''}`}
+            style={{ background: bg.color }}
+            onClick={() => {
+              setBackground(bg.id);
+              localStorage.setItem('lovebug-background', bg.id);
+            }}
+            title={bg.name}
+          />
+        ))}
+      </div>
+    </div>
+  );
+}
 
 const ChatApp: React.FC<ChatAppProps> = ({ onClose }) => {
   const [messages, setMessages] = useState<Message[]>([
@@ -134,6 +195,7 @@ const ChatApp: React.FC<ChatAppProps> = ({ onClose }) => {
         // 최소/최대 크기 제한
         const finalWidth = Math.max(320, Math.min(window.innerWidth - 40, newWidth))
         const finalHeight = Math.max(400, Math.min(window.innerHeight - 40, newHeight))
+        
         // 위치가 화면 밖으로 나가지 않도록 제한
         // left/top 리사이징의 경우에만 위치 조정
         if (isResizing.includes('left') && finalWidth !== newWidth) {
@@ -144,14 +206,17 @@ const ChatApp: React.FC<ChatAppProps> = ({ onClose }) => {
           // 최소 크기에 도달했을 때 위치 고정
           newY = chatPosition.y + (chatSize.height - finalHeight)
         }
+        
         // 화면 경계 체크
         const finalX = Math.max(0, Math.min(window.innerWidth - finalWidth, newX))
         const finalY = Math.max(0, Math.min(window.innerHeight - finalHeight, newY))
+        
         setChatSize({ width: finalWidth, height: finalHeight })
         setChatPosition({ x: finalX, y: finalY })
       } else if (isDragging) {
         const newX = e.clientX - dragStart.x
         const newY = e.clientY - dragStart.y
+        
         // 화면 밖으로 나가지 않도록 제한
         setChatPosition({
           x: Math.max(0, Math.min(window.innerWidth - chatSize.width, newX)),
@@ -164,12 +229,14 @@ const ChatApp: React.FC<ChatAppProps> = ({ onClose }) => {
       setIsResizing(false)
       setIsDragging(false)
     }
+    
     if (isResizing || isDragging) {
       document.addEventListener('mousemove', handleMouseMove)
       document.addEventListener('mouseup', handleMouseUp)
       document.body.style.cursor = isResizing ? (isResizing + '-resize') : 'move'
       document.body.style.userSelect = 'none'
     }
+    
     return () => {
       document.removeEventListener('mousemove', handleMouseMove)
       document.removeEventListener('mouseup', handleMouseUp)
