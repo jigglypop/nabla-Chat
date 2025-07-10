@@ -7,6 +7,7 @@ import styles from './content.module.css'
 import { Provider } from 'jotai'
 import { store } from './atoms/store'
 import { floatingPositionAtom } from './atoms/chatAtoms'
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 
 let floatingUIRoot: ReactDOM.Root | null = null
 let floatingUIContainer: HTMLElement | null = null
@@ -17,10 +18,12 @@ let chatOpen = false
 let currentActiveElement: HTMLInputElement | HTMLTextAreaElement | null = null
 let isDraggingFloatingUI = false
 
+const queryClient = new QueryClient()
+
 function createChatButton() {
   if (chatButtonContainer) return
   chatButtonContainer = document.createElement('div')
-  chatButtonContainer.id = 'lovebug-chat-button'
+  chatButtonContainer.id = 'nabla-chat-button'
   const button = document.createElement('button')
   button.className = styles.chatButton
   const overlay = document.createElement('span')
@@ -57,14 +60,16 @@ function openChatInterface(selectedText?: string) {
   removeFloatingUI()
   if (chatContainer) return
   chatContainer = document.createElement('div')
-  chatContainer.id = 'lovebug-chat-app'
+  chatContainer.id = 'nabla-chat-app'
   document.body.appendChild(chatContainer)
   chatRoot = ReactDOM.createRoot(chatContainer)
   chatRoot.render(
     <React.StrictMode>
-      <Provider store={store}>
-        <ChatApp onClose={closeChatInterface} />
-      </Provider>
+      <QueryClientProvider client={queryClient}>
+        <Provider store={store}>
+          <ChatApp onClose={closeChatInterface} />
+        </Provider>
+      </QueryClientProvider>
     </React.StrictMode>
   )
   chatOpen = true
@@ -120,7 +125,7 @@ function createFloatingUI(selection: SelectionInfo) {
   }
 
   floatingUIContainer = document.createElement('div')
-  floatingUIContainer.id = 'lovebug-floating-ui'
+  floatingUIContainer.id = 'nabla-floating-ui'
   floatingUIContainer.className = styles.floatingUI
   floatingUIContainer.style.position = 'fixed'
   
@@ -176,14 +181,16 @@ function createFloatingUI(selection: SelectionInfo) {
   floatingUIRoot = ReactDOM.createRoot(floatingUIContainer)
   floatingUIRoot.render(
     <React.StrictMode>
-      <Provider store={store}>
-        <FloatingUI
-          selectedText={selection.text}
-          onClose={removeFloatingUI}
-          onExecutePlugin={handlePluginExecution}
-          activeElement={currentActiveElement}
-        />
-      </Provider>
+      <QueryClientProvider client={queryClient}>
+        <Provider store={store}>
+          <FloatingUI
+            selectedText={selection.text}
+            onClose={removeFloatingUI}
+            onExecutePlugin={handlePluginExecution}
+            activeElement={currentActiveElement}
+          />
+        </Provider>
+      </QueryClientProvider>
     </React.StrictMode>
   )
 }
@@ -270,31 +277,34 @@ function resizeChatWindow(direction: 'larger' | 'smaller') {
   }, '*')
 }
 
-chrome.runtime.onMessage.addListener((message: Message) => {
-  if (message.type === 'SELECTION_CHANGED' && message.payload?.selectedText) {
-    // This part seems complex, let's simplify or rely on mouseup
-  } else if (message.type === 'COMMAND' && message.payload?.command) {
-    const command = message.payload.command
+// chrome.runtime API가 로드되었는지 확인 후 리스너 추가
+if (chrome.runtime && chrome.runtime.onMessage) {
+  chrome.runtime.onMessage.addListener((message: Message) => {
+    if (message.type === 'SELECTION_CHANGED' && message.payload?.selectedText) {
+      // This part seems complex, let's simplify or rely on mouseup
+    } else if (message.type === 'COMMAND' && message.payload?.command) {
+      const command = message.payload.command;
 
-    switch (command) {
-      case 'send-to-ai':
-        // This command logic might be redundant with the mouseup listener
-        break
+      switch (command) {
+        case 'send-to-ai':
+          // This command logic might be redundant with the mouseup listener
+          break;
 
-      case 'toggle-chat':
-        toggleChat()
-        break
+        case 'toggle-chat':
+          toggleChat();
+          break;
 
-      case 'resize-larger':
-        resizeChatWindow('larger')
-        break
+        case 'resize-larger':
+          resizeChatWindow('larger');
+          break;
 
-      case 'resize-smaller':
-        resizeChatWindow('smaller')
-        break
+        case 'resize-smaller':
+          resizeChatWindow('smaller');
+          break;
+      }
     }
-  }
-})
+  });
+}
 
 if (document.readyState === 'loading') {
   document.addEventListener('DOMContentLoaded', createChatButton)

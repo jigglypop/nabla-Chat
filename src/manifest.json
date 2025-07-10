@@ -1,8 +1,8 @@
 {
   "manifest_version": 3,
-  "name": "lovebug",
+  "name": "∇·Chat",
   "version": "0.1.0",
-  "description": "Lovebug can do anything!",
+  "description": "AI-powered text transformation assistant",
   "author": "염동환",
   "permissions": [
     "storage",

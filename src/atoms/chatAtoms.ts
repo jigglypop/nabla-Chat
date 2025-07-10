@@ -6,13 +6,11 @@ export const messagesAtom = atom<Message[]>([
   {
     id: '1',
     role: 'assistant',
-    content: '안녕하세요! Lovebug AI 어시스턴트입니다. 무엇을 도와드릴까요?',
+    content: '안녕하세요! ∇·Chat AI 어시스턴트입니다. 무엇을 도와드릴까요?',
     timestamp: new Date(),
   },
 ]);
-
 export const inputAtom = atom<string>('');
-export const isLoadingAtom = atom<boolean>(false);
 export const isMinimizedAtom = atom<boolean>(false);
 
 export const chatPositionAtom = atomWithStorage<{ x: number; y: number }>(
@@ -31,7 +29,7 @@ export const chatSizeAtom = atomWithStorage<{ width: number; height: number }>(
   }
 );
 
-export const backgroundAtom = atomWithStorage<string>('lovebug-background', 'gradient6'); 
+export const backgroundAtom = atom<string>('gradient1'); 
 
 // FloatingUI용 atom들
 export const floatingPositionAtom = atomWithStorage<{ x: number; y: number }>(

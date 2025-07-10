@@ -1,5 +1,5 @@
 {
-  "name": "lovebug",
+  "name": "nabla-chat",
   "private": true,
   "version": "0.0.0",
   "type": "module",
@@ -17,6 +17,8 @@
   },
   "dependencies": {
     "@floating-ui/react": "^0.26.28",
+    "@tanstack/react-query": "^5.82.0",
+    "axios": "^1.10.0",
     "jotai": "^2.10.3",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",

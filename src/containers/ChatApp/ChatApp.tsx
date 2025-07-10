@@ -1,20 +1,20 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { useAtom } from 'jotai';
 import styles from './ChatApp.module.css';
 import type { ChatAppProps, Message } from './types';
 import { BackgroundSelector } from '../../components/BGSelector';
 import { backgrounds } from '../../components/BGSelector/constants';
+import { SettingsModal } from '../../components/SettingsModal';
 import useResize from '../../hooks/useResize';
+import { useAIChat } from '../../hooks/useAIChat';
 import {
   messagesAtom,
   inputAtom,
-  isLoadingAtom,
   isMinimizedAtom,
   backgroundAtom,
   chatPositionAtom,
   chatSizeAtom
 } from '../../atoms/chatAtoms';
-import { getOpenAIChatCompletion } from '../../services/openai';
 
 const ChatApp: React.FC<ChatAppProps> = ({ onClose }) => {
   const {
@@ -32,14 +32,16 @@ const ChatApp: React.FC<ChatAppProps> = ({ onClose }) => {
 
   const [messages, setMessages] = useAtom(messagesAtom);
   const [input, setInput] = useAtom(inputAtom);
-  const [isLoading, setIsLoading] = useAtom(isLoadingAtom);
   const [isMinimized, setIsMinimized] = useAtom(isMinimizedAtom);
   const [background, setBackground] = useAtom(backgroundAtom);
   const [chatPosition, setChatPosition] = useAtom(chatPositionAtom);
   const [chatSize, setChatSize] = useAtom(chatSizeAtom);
 
+  const { sendMessage, isLoading } = useAIChat();
+
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
+  const [isSettingsOpen, setIsSettingsOpen] = useState(false);
 
   const currentBg = backgrounds.find(bg => bg.id === background) || backgrounds[0];
   const isDarkTheme = ['gradient4', 'gradient5', 'gradient6'].includes(background);
@@ -81,28 +83,8 @@ const ChatApp: React.FC<ChatAppProps> = ({ onClose }) => {
 
   const handleSend = async () => {
     if (!input.trim() || isLoading) return;
-    const userMessage: Message = {
-      id: Date.now().toString(),
-      role: 'user',
-      content: input.trim(),
-      timestamp: new Date()
-    };
-    
-    const newMessages = [...messages, userMessage];
-    setMessages(newMessages);
+    sendMessage(input);
     setInput('');
-    setIsLoading(true);
-
-    const aiResponse = await getOpenAIChatCompletion(newMessages);
-
-    const aiMessage: Message = {
-      id: (Date.now() + 1).toString(),
-      role: 'assistant',
-      content: aiResponse || '죄송합니다. 응답을 생성하지 못했습니다.',
-      timestamp: new Date()
-    };
-    setMessages(prev => [...prev, aiMessage]);
-    setIsLoading(false);
   };
 
   const handleKeyPress = (e: React.KeyboardEvent) => {
@@ -159,6 +141,7 @@ const ChatApp: React.FC<ChatAppProps> = ({ onClose }) => {
         top: chatPosition.y + 'px'
       } as React.CSSProperties}
       data-theme={isDarkTheme ? 'dark' : 'light'}
+      data-background={background}
     >
       <div className={`${styles.resizeHandle} ${styles.resizeTop}`} onMouseDown={() => setIsResizing('top')} />
       <div className={`${styles.resizeHandle} ${styles.resizeRight}`} onMouseDown={() => setIsResizing('right')} />
@@ -172,19 +155,19 @@ const ChatApp: React.FC<ChatAppProps> = ({ onClose }) => {
         <div className={styles.headerInfo}>
           <div className={styles.logoWrapper}>
             <svg width="36" height="36" viewBox="0 0 128 128" fill="currentColor" className={styles.logo}>
-              <rect width="128" height="128" fill="url(#lovebug-gradient)" rx="24"/>
+              <rect width="128" height="128" fill="url(#nabla-gradient)" rx="24"/>
               <defs>
-                <linearGradient id="lovebug-gradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                <linearGradient id="nabla-gradient" x1="0%" y1="0%" x2="100%" y2="100%">
                   <stop offset="0%" stopColor="#12c2e9" />
                   <stop offset="50%" stopColor="#c471ed" />
                   <stop offset="100%" stopColor="#f64f59" />
                 </linearGradient>
               </defs>
-              <text x="64" y="80" textAnchor="middle" fill="white" fontSize="60" fontFamily="Arial, sans-serif" fontWeight="bold">L</text>
+              <text x="64" y="80" textAnchor="middle" fill="white" fontSize="60" fontFamily="Arial, sans-serif" fontWeight="bold">∇</text>
             </svg>
           </div>
           <div>
-            <p className={styles.title}>러브버그챗</p>
+            <p className={styles.title}>∇·Chat</p>
             <span className={styles.status}>
               <span className={styles.statusDot}></span>
               연결중
@@ -193,6 +176,16 @@ const ChatApp: React.FC<ChatAppProps> = ({ onClose }) => {
         </div>
         <div className={styles.headerActions}>
           <BackgroundSelector background={background} setBackground={setBackground} />
+          <button 
+            onClick={() => setIsSettingsOpen(true)} 
+            className={styles.actionButton}
+            aria-label="설정"
+            data-testid="settings-button"
+          >
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M12,15.5A3.5,3.5 0 0,1 8.5,12A3.5,3.5 0 0,1 12,8.5A3.5,3.5 0 0,1 15.5,12A3.5,3.5 0 0,1 12,15.5M19.43,12.97C19.47,12.65 19.5,12.33 19.5,12C19.5,11.67 19.47,11.34 19.43,11L21.54,9.37C21.73,9.22 21.78,8.95 21.66,8.73L19.66,5.27C19.54,5.05 19.27,4.96 19.05,5.05L16.56,6.05C16.04,5.66 15.5,5.32 14.87,5.07L14.5,2.42C14.46,2.18 14.25,2 14,2H10C9.75,2 9.54,2.18 9.5,2.42L9.13,5.07C8.5,5.32 7.96,5.66 7.44,6.05L4.95,5.05C4.73,4.96 4.46,5.05 4.34,5.27L2.34,8.73C2.21,8.95 2.27,9.22 2.46,9.37L4.57,11C4.53,11.34 4.5,11.67 4.5,12C4.5,12.33 4.53,12.65 4.57,12.97L2.46,14.63C2.27,14.78 2.21,15.05 2.34,15.27L4.34,18.73C4.46,18.95 4.73,19.03 4.95,18.95L7.44,17.94C7.96,18.34 8.5,18.68 9.13,18.93L9.5,21.58C9.54,21.82 9.75,22 10,22H14C14.25,22 14.46,21.82 14.5,21.58L14.87,18.93C15.5,18.67 16.04,18.34 16.56,17.94L19.05,18.95C19.27,19.03 19.54,18.95 19.66,18.73L21.66,15.27C21.78,15.05 21.73,14.78 21.54,14.63L19.43,12.97Z"/>
+            </svg>
+          </button>
           <button 
             onClick={() => setIsMinimized(!isMinimized)} 
             className={styles.actionButton}
@@ -278,6 +271,7 @@ const ChatApp: React.FC<ChatAppProps> = ({ onClose }) => {
           </div>
         </>
       )}
+      <SettingsModal isOpen={isSettingsOpen} onClose={() => setIsSettingsOpen(false)} />
     </div>
   )
 }
