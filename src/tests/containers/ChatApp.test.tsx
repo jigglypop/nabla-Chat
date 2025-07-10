@@ -2,7 +2,7 @@ import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
 import { render, screen, fireEvent, waitFor } from '@testing-library/react'
 import { act } from 'react'
 import userEvent from '@testing-library/user-event'
-import ChatApp from '../../components/ChatApp/ChatApp'
+import ChatApp from '../../containers/ChatApp/ChatApp'
 
 describe('ChatApp 컴포넌트 테스트', () => {
   const mockOnClose = vi.fn()

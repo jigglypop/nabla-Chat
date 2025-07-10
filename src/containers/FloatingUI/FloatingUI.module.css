@@ -1,0 +1,132 @@
+.floatingContainer {
+  position: fixed;
+  background: rgba(20, 20, 20, 0.95);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+  padding: 8px;
+  min-width: 200px;
+  max-width: 300px;
+  z-index: 10000;
+}
+
+.floatingHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+  padding: 0 4px;
+}
+
+.floatingTitle {
+  font-size: 12px;
+  color: #fff;
+  font-weight: 500;
+  opacity: 0.8;
+}
+
+.closeBtn {
+  background: none;
+  border: none;
+  color: #fff;
+  opacity: 0.6;
+  cursor: pointer;
+  padding: 2px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: opacity 0.2s;
+}
+
+.closeBtn:hover {
+  opacity: 1;
+}
+
+.floatingActions {
+  display: flex;
+  gap: 4px;
+  margin-bottom: 8px;
+}
+
+.floatingBtn {
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 6px;
+  color: #fff;
+  cursor: pointer;
+  padding: 8px;
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s;
+  position: relative;
+}
+
+.floatingBtn:hover {
+  background: rgba(255, 255, 255, 0.2);
+  border-color: rgba(255, 255, 255, 0.3);
+}
+
+.floatingBtn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.floatingBtn.active {
+  background: rgba(99, 102, 241, 0.3);
+  border-color: rgba(99, 102, 241, 0.5);
+}
+
+.floatingBtn svg {
+  width: 16px;
+  height: 16px;
+}
+
+.floatingResult {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 6px;
+  padding: 10px;
+  max-height: 200px;
+  overflow-y: auto;
+  font-size: 13px;
+  line-height: 1.5;
+  color: #fff;
+}
+
+.loading {
+  text-align: center;
+  color: rgba(255, 255, 255, 0.6);
+  font-size: 12px;
+}
+
+.error {
+  color: #ff6b6b;
+  font-size: 12px;
+}
+
+.resultText {
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+/* 스크롤바 스타일 */
+.floatingResult::-webkit-scrollbar {
+  width: 4px;
+}
+
+.floatingResult::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 2px;
+}
+
+.floatingResult::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 2px;
+}
+
+.floatingResult::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.3);
+} 

@@ -24,3 +24,7 @@ dist-ssr
 *.sw?
 .cursorignore
 rules.mdc
+
+# local env files
+.env*.local
+.env

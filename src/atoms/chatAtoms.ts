@@ -1,0 +1,34 @@
+import { atom } from 'jotai';
+import { atomWithStorage } from 'jotai/utils';
+import type { Message } from '../containers/ChatApp/types';
+
+export const messagesAtom = atom<Message[]>([
+  {
+    id: '1',
+    role: 'assistant',
+    content: '안녕하세요! Lovebug AI 어시스턴트입니다. 무엇을 도와드릴까요?',
+    timestamp: new Date(),
+  },
+]);
+
+export const inputAtom = atom<string>('');
+export const isLoadingAtom = atom<boolean>(false);
+export const isMinimizedAtom = atom<boolean>(false);
+
+export const chatPositionAtom = atomWithStorage<{ x: number; y: number }>(
+  'lovebug-chat-position',
+  {
+    x: window.innerWidth - 420,
+    y: 20,
+  }
+);
+
+export const chatSizeAtom = atomWithStorage<{ width: number; height: number }>(
+  'lovebug-chat-size',
+  {
+    width: 400,
+    height: 600,
+  }
+);
+
+export const backgroundAtom = atomWithStorage<string>('lovebug-background', 'gradient1'); 

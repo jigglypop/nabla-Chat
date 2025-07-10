@@ -18,6 +18,8 @@
   "dependencies": {
     "@vitejs/plugin-react": "^4.6.0",
     "crypto-js": "^4.2.0",
+    "jotai": "^2.12.5",
+    "openai": "^5.8.3",
     "react": "^19.1.0",
     "react-dom": "^19.1.0"
   },
@@ -30,6 +32,7 @@
     "@testing-library/user-event": "^14.5.1",
     "@types/chrome": "^0.0.329",
     "@types/crypto-js": "^4.2.2",
+    "@types/node": "^24.0.12",
     "@types/react": "^19.1.8",
     "@types/react-dom": "^19.1.6",
     "@vitejs/plugin-react-swc": "^3.10.2",

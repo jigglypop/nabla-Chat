@@ -1,8 +1,8 @@
 import React from 'react'
 import ReactDOM from 'react-dom/client'
 import type { Message, SelectionInfo } from './types'
-import FloatingUI from './components/FloatingUI/FloatingUI'
-import ChatApp from './components/ChatApp/ChatApp'
+import FloatingUI from './containers/FloatingUI/FloatingUI'
+import ChatApp from './containers/ChatApp/ChatApp'
 import styles from './content.module.css'
 
 let floatingUIRoot: ReactDOM.Root | null = null
@@ -126,9 +126,15 @@ function createFloatingUI(selection: SelectionInfo) {
   floatingUIRoot = ReactDOM.createRoot(floatingUIContainer)
   floatingUIRoot.render(
     <React.StrictMode>
-      <FloatingUI selectedText={selection.text} onClose={removeFloatingUI} />
+      <FloatingUI
+        selectedText={selection.text}
+        onClose={removeFloatingUI}
+        onExecutePlugin={handlePluginExecution}
+      />
     </React.StrictMode>
   )
+  
+  // 자동 닫기 로직 완전 제거 - 오직 닫기 버튼으로만 닫힘
 }
 
 function removeFloatingUI() {
@@ -161,17 +167,11 @@ function getSelectionInfo(): SelectionInfo | null {
 document.addEventListener('mouseup', () => {
   setTimeout(() => {
     const selection = getSelectionInfo()
-    if (selection && !chatOpen) {
+    // 플로팅 UI가 이미 열려있으면 새로 열지 않음
+    if (selection && !chatOpen && !floatingUIContainer) {
       createFloatingUI(selection)
     }
   }, 10)
-})
-
-document.addEventListener('mousedown', (e) => {
-  const target = e.target as Node
-  if (floatingUIContainer && !floatingUIContainer.contains(target)) {
-    removeFloatingUI()
-  }
 })
 
 function resizeChatWindow(direction: 'larger' | 'smaller') {
@@ -230,3 +230,23 @@ if (document.readyState === 'loading') {
 } else {
   createChatButton()
 } 
+
+const handlePluginExecution = (pluginId: string, text: string): Promise<void> => {
+  return new Promise((resolve, reject) => {
+    chrome.runtime.sendMessage({ type: 'EXECUTE_PLUGIN', pluginId, text }, (response) => {
+      if (chrome.runtime.lastError) {
+        console.error(chrome.runtime.lastError.message);
+        return reject(new Error(chrome.runtime.lastError.message));
+      }
+
+      if (response?.success) {
+        window.postMessage({ type: 'SEND_TO_CHAT', text: response.data }, '*');
+        resolve();
+      } else {
+        const errorMessage = response?.error || '플러그인 실행 중 오류가 발생했습니다.';
+        window.postMessage({ type: 'SEND_TO_CHAT', text: `오류: ${errorMessage}` }, '*');
+        reject(new Error(errorMessage));
+      }
+    });
+  });
+};

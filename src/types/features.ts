@@ -6,6 +6,7 @@ export interface FeaturePlugin {
     category: FeatureCategory
     icon: string
     description: string
+    defaultPrompt?: string
     enabled: boolean
     execute: (text: string, options?: FeatureOptions) => Promise<FeatureResult>
 }

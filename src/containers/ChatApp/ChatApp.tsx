@@ -1,9 +1,20 @@
-import React, { useState, useEffect, useRef } from 'react'
-import styles from './ChatApp.module.css'
-import type { ChatAppProps, Message } from './types'
-import { BackgroundSelector } from '../BGSelector'
-import { backgrounds } from '../BGSelector/constants'
-import useResize from '../../hooks/useResize'
+import React, { useEffect, useRef } from 'react';
+import { useAtom } from 'jotai';
+import styles from './ChatApp.module.css';
+import type { ChatAppProps, Message } from './types';
+import { BackgroundSelector } from '../../components/BGSelector';
+import { backgrounds } from '../../components/BGSelector/constants';
+import useResize from '../../hooks/useResize';
+import {
+  messagesAtom,
+  inputAtom,
+  isLoadingAtom,
+  isMinimizedAtom,
+  backgroundAtom,
+  chatPositionAtom,
+  chatSizeAtom
+} from '../../atoms/chatAtoms';
+import { getOpenAIChatCompletion } from '../../services/openai';
 
 const ChatApp: React.FC<ChatAppProps> = ({ onClose }) => {
   const {
@@ -14,143 +25,127 @@ const ChatApp: React.FC<ChatAppProps> = ({ onClose }) => {
     setIsDragging,
     isResizing,
     setIsResizing,
-    chatPosition,
-    setChatPosition,
-    chatSize,
-    setChatSize,
     dragStart,
     containerRef,
     setDragStart
-  } = useResize()
-  const [messages, setMessages] = useState<Message[]>([
-    {
-      id: '1',
-      role: 'assistant',
-      content: '안녕하세요! Lovebug AI 어시스턴트입니다. 무엇을 도와드릴까요?',
-      timestamp: new Date()
-    }
-  ])
-  const [input, setInput] = useState('')
-  const [isLoading, setIsLoading] = useState(false)
-  const [isMinimized, setIsMinimized] = useState(false)
-  const messagesEndRef = useRef<HTMLDivElement>(null)
-  const textareaRef = useRef<HTMLTextAreaElement>(null)
-  const [background, setBackground] = useState(() => {
-    return localStorage.getItem('lovebug-background') || 'gradient1';
-  });
+  } = useResize();
+
+  const [messages, setMessages] = useAtom(messagesAtom);
+  const [input, setInput] = useAtom(inputAtom);
+  const [isLoading, setIsLoading] = useAtom(isLoadingAtom);
+  const [isMinimized, setIsMinimized] = useAtom(isMinimizedAtom);
+  const [background, setBackground] = useAtom(backgroundAtom);
+  const [chatPosition, setChatPosition] = useAtom(chatPositionAtom);
+  const [chatSize, setChatSize] = useAtom(chatSizeAtom);
+
+  const messagesEndRef = useRef<HTMLDivElement>(null);
+  const textareaRef = useRef<HTMLTextAreaElement>(null);
+
   const currentBg = backgrounds.find(bg => bg.id === background) || backgrounds[0];
   const isDarkTheme = ['gradient4', 'gradient5', 'gradient6'].includes(background);
-
 
   useEffect(() => {
     const handleMessage = (event: MessageEvent) => {
       if (event.data.type === 'SEND_TO_CHAT' && event.data.text) {
-        setInput(event.data.text)
+        setInput(event.data.text);
         setTimeout(() => {
-          handleSend()
-        }, 100)
+          handleSend();
+        }, 100);
       } else if (event.data.type === 'RESIZE_CHAT' && event.data.direction) {
-        setChatSize((prevSize: { width: number, height: number }) => {
-          const step = 50
-          let newWidth, newHeight
+        setChatSize((prevSize) => {
+          const step = 50;
+          let newWidth, newHeight;
           if (event.data.direction === 'larger') {
-            newWidth = Math.min(window.innerWidth - 40, prevSize.width + step)
-            newHeight = Math.min(window.innerHeight - 40, prevSize.height + step)
+            newWidth = Math.min(window.innerWidth - 40, prevSize.width + step);
+            newHeight = Math.min(window.innerHeight - 40, prevSize.height + step);
           } else {
-            newWidth = Math.max(320, prevSize.width - step)
-            newHeight = Math.max(400, prevSize.height - step)
+            newWidth = Math.max(320, prevSize.width - step);
+            newHeight = Math.max(400, prevSize.height - step);
           }
-          setChatPosition((prevPos: { x: number, y: number }) => {
-            const newX = Math.min(prevPos.x, window.innerWidth - newWidth)
-            const newY = Math.min(prevPos.y, window.innerHeight - newHeight)
-            return { x: Math.max(0, newX), y: Math.max(0, newY) }
-          })
-          return { width: newWidth, height: newHeight }
-        })
+          setChatPosition((prevPos) => {
+            const newX = Math.min(prevPos.x, window.innerWidth - newWidth);
+            const newY = Math.min(prevPos.y, window.innerHeight - newHeight);
+            return { x: Math.max(0, newX), y: Math.max(0, newY) };
+          });
+          return { width: newWidth, height: newHeight };
+        });
       }
-    }
-    window.addEventListener('message', handleMessage)
-    return () => window.removeEventListener('message', handleMessage)
-  }, [input]) 
-
-
+    };
+    window.addEventListener('message', handleMessage);
+    return () => window.removeEventListener('message', handleMessage);
+  }, [input, setInput, setChatSize, setChatPosition]);
 
   const scrollToBottom = () => {
-    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' })
-  }
+    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+  };
 
   const handleSend = async () => {
-    if (!input.trim() || isLoading) return
+    if (!input.trim() || isLoading) return;
     const userMessage: Message = {
       id: Date.now().toString(),
       role: 'user',
       content: input.trim(),
       timestamp: new Date()
-    }
-    setMessages(prev => [...prev, userMessage])
-    setInput('')
-    setIsLoading(true)
-    setTimeout(() => {
-      const aiMessage: Message = {
-        id: (Date.now() + 1).toString(),
-        role: 'assistant',
-        content: '목업용 대화입니다!',
-        timestamp: new Date()
-      }
-      setMessages(prev => [...prev, aiMessage])
-      setIsLoading(false)
-    }, 1000)
-  }
+    };
+    
+    const newMessages = [...messages, userMessage];
+    setMessages(newMessages);
+    setInput('');
+    setIsLoading(true);
+
+    const aiResponse = await getOpenAIChatCompletion(newMessages);
+
+    const aiMessage: Message = {
+      id: (Date.now() + 1).toString(),
+      role: 'assistant',
+      content: aiResponse || '죄송합니다. 응답을 생성하지 못했습니다.',
+      timestamp: new Date()
+    };
+    setMessages(prev => [...prev, aiMessage]);
+    setIsLoading(false);
+  };
 
   const handleKeyPress = (e: React.KeyboardEvent) => {
     if (e.key === 'Enter' && !e.shiftKey) {
-      e.preventDefault()
-      handleSend()
+      e.preventDefault();
+      handleSend();
     }
-  }
+  };
 
   const handleHeaderMouseDown = (e: React.MouseEvent) => {
-    if ((e.target as HTMLElement).closest('button')) return
-    const rect = containerRef.current?.getBoundingClientRect()
-    if (!rect) return
+    if ((e.target as HTMLElement).closest('button')) return;
+    const rect = containerRef.current?.getBoundingClientRect();
+    if (!rect) return;
     setDragStart({
       x: e.clientX - rect.left,
       y: e.clientY - rect.top
-    })
-    setIsDragging(true)
-  }
-  
-  useEffect(() => {
-   if (isResizing || isDragging) {
-    document.addEventListener('mousemove', onMouseMove)
-    document.addEventListener('mouseup', onMouseUp)
-    document.body.style.cursor = isResizing ? isResizing + '-resize' : 'move'
-    document.body.style.userSelect = 'none'
-   }
-   return () => {
-    document.removeEventListener('mousemove', onMouseMove)
-    document.removeEventListener('mouseup', onMouseUp)
-    document.body.style.cursor = ''
-    document.body.style.userSelect = ''
-   }
-  }, [isResizing, isDragging, dragStart, chatSize, chatPosition])
+    });
+    setIsDragging(true);
+  };
 
   useEffect(() => {
-   scrollToBottom()
-  }, [messages])
+    if (isResizing || isDragging) {
+      document.addEventListener('mousemove', onMouseMove);
+      document.addEventListener('mouseup', onMouseUp);
+      document.body.style.cursor = isResizing ? isResizing + '-resize' : 'move';
+      document.body.style.userSelect = 'none';
+    }
+    return () => {
+      document.removeEventListener('mousemove', onMouseMove);
+      document.removeEventListener('mouseup', onMouseUp);
+      document.body.style.cursor = '';
+      document.body.style.userSelect = '';
+    };
+  }, [isResizing, isDragging, onMouseMove, onMouseUp]);
 
   useEffect(() => {
-    localStorage.setItem('lovebug-chat-size', JSON.stringify(chatSize))
-  }, [chatSize])
-  
+    scrollToBottom();
+  }, [messages]);
+
   useEffect(() => {
-    localStorage.setItem('lovebug-chat-position', JSON.stringify(chatPosition))
-  }, [chatPosition])
-  
-  useEffect(() => {
-    window.addEventListener('resize', onResize)
-    return () => window.removeEventListener('resize', onResize)
-  }, [chatSize.width, chatSize.height])
+    window.addEventListener('resize', onResize);
+    return () => window.removeEventListener('resize', onResize);
+  }, [onResize]);
 
   return (
     <div 

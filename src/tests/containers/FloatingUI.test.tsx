@@ -1,20 +1,32 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { render, screen, fireEvent, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-import FloatingUI from '../../components/FloatingUI/FloatingUI'
+import FloatingUI from '../../containers/FloatingUI/FloatingUI';
 
 // Chrome runtime 모킹
 const mockSendMessage = vi.fn()
 globalThis.chrome = globalThis.chrome || { runtime: {} }
 globalThis.chrome.runtime.sendMessage = mockSendMessage
 
+// vi 모킹 추가
+vi.mock('../../utils/settings', () => ({
+  getPromptForPlugin: vi.fn((_pluginId, defaultPrompt) => Promise.resolve(defaultPrompt)),
+}));
+
 describe('FloatingUI 컴포넌트 테스트', () => {
+  const mockOnClose = vi.fn();
+  const mockOnExecutePlugin = vi.fn(() => Promise.resolve());
+
   const defaultProps = {
-    selectedText: '테스트 텍스트',
-    onClose: vi.fn()
-  }
+    selectedText: '테스트 텍스트입니다.',
+    onClose: mockOnClose,
+    onExecutePlugin: mockOnExecutePlugin,
+  };
 
   beforeEach(() => {
+    // 각 테스트 전에 mock 함수 호출 기록 초기화
+    mockOnClose.mockClear();
+    mockOnExecutePlugin.mockClear();
     vi.clearAllMocks()
     // 기본 응답 설정
     mockSendMessage.mockImplementation((message, callback) => {
@@ -82,7 +94,7 @@ describe('FloatingUI 컴포넌트 테스트', () => {
         fireEvent.click(closeButton!)
       })
       
-      expect(defaultProps.onClose).toHaveBeenCalledTimes(1)
+      expect(mockOnClose).toHaveBeenCalledTimes(1)
     })
 
     it('기능 버튼 클릭 시 기능이 실행되어야 함', async () => {
@@ -226,4 +238,18 @@ describe('FloatingUI 컴포넌트 테스트', () => {
       expect(true).toBe(true)
     })
   })
+
+  test('플러그인 버튼 클릭 시 onExecutePlugin이 호출되어야 한다', async () => {
+    const user = userEvent.setup();
+    render(<FloatingUI {...defaultProps} />);
+
+    // UI가 확장되도록 Ctrl 키 누름
+    await user.keyboard('{Control>}');
+    
+    const summarizeButton = screen.getByRole('button', { name: /요약/i });
+    await user.click(summarizeButton);
+
+    expect(mockOnExecutePlugin).toHaveBeenCalledWith('summarize', defaultProps.selectedText);
+    expect(mockOnExecutePlugin).toHaveBeenCalledTimes(1);
+  });
 }) 

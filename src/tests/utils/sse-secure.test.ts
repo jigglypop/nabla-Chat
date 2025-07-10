@@ -210,7 +210,6 @@ describe('SecureSSEClient 테스트', () => {
           })
         }
       } as any)
-      
       const result = await secureSSEClient.sendMessage('test')
       expect(result).toBe('첫 번째 두 번째')
     })
