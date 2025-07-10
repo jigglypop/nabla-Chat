@@ -8,7 +8,8 @@ export interface FeaturePlugin {
     description: string
     defaultPrompt?: string
     enabled: boolean
-    execute: (text: string, options?: FeatureOptions) => Promise<FeatureResult>
+    customPrompt?: string; // 사용자가 설정한 커스텀 프롬프트
+    execute: (text: string) => Promise<FeatureResult>;
 }
 
 export interface FeatureOptions {

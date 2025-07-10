@@ -5,7 +5,7 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
+  justify-content: flex-start;
   font-size: calc(10px + 2vmin);
   color: white;
   padding: 2rem;
@@ -21,12 +21,44 @@
   color: #e0e0e0;
 }
 
+.dev-note {
+  font-size: 0.9rem;
+  color: #667eea;
+  margin: 0;
+}
+
 .App-main {
   width: 100%;
-  max-width: 600px;
+  max-width: 800px;
   display: flex;
   flex-direction: column;
   gap: 2rem;
+}
+
+.test-section {
+  background: #242424;
+  padding: 2rem;
+  border-radius: 12px;
+  text-align: left;
+}
+
+.test-section h2 {
+  font-size: 1.5rem;
+  margin-bottom: 1rem;
+  color: #fff;
+}
+
+.test-text {
+  font-size: 1rem;
+  line-height: 1.6;
+  color: #e0e0e0;
+  margin-bottom: 1rem;
+  user-select: text;
+  cursor: text;
+}
+
+.test-text::selection {
+  background: rgba(102, 126, 234, 0.3);
 }
 
 .input-container {
@@ -34,6 +66,9 @@
   flex-direction: column;
   align-items: flex-start;
   width: 100%;
+  background: #242424;
+  padding: 1.5rem;
+  border-radius: 12px;
 }
 
 .input-container label {
@@ -59,10 +94,45 @@
 #test-input:focus,
 #test-textarea:focus {
   outline: none;
-  border-color: #c56cf0;
-  box-shadow: 0 0 0 3px rgba(197, 108, 240, 0.3);
+  border-color: #667eea;
+  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.3);
 }
 
 #test-textarea {
   resize: vertical;
+}
+
+.info-section {
+  background: #242424;
+  padding: 2rem;
+  border-radius: 12px;
+  text-align: left;
+}
+
+.info-section h3 {
+  font-size: 1.3rem;
+  margin-bottom: 1rem;
+  color: #fff;
+}
+
+.info-section ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.info-section li {
+  font-size: 0.9rem;
+  color: #ccc;
+  margin-bottom: 0.5rem;
+  padding-left: 1.5rem;
+  position: relative;
+}
+
+.info-section li:before {
+  content: "•";
+  color: #667eea;
+  font-weight: bold;
+  position: absolute;
+  left: 0;
 } 

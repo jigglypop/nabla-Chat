@@ -26,11 +26,16 @@ class PluginManager {
 
   async loadState() {
     try {
-      const storage = await chrome.storage.sync.get('plugin_states');
+      const storage = await chrome.storage.sync.get(['plugin_states', 'plugin_prompts']);
       const states = storage.plugin_states || {};
+      const prompts = storage.plugin_prompts || {};
+      
       for (const [id, plugin] of this.plugins.entries()) {
         if (states[id] !== undefined) {
           plugin.enabled = states[id];
+        }
+        if (prompts[id] !== undefined) {
+          plugin.customPrompt = prompts[id];
         }
       }
     } catch (e) {
@@ -40,11 +45,20 @@ class PluginManager {
 
   async saveState() {
     const states: { [key: string]: boolean } = {};
+    const prompts: { [key: string]: string } = {};
+    
     for (const [id, plugin] of this.plugins.entries()) {
       states[id] = plugin.enabled;
+      if (plugin.customPrompt) {
+        prompts[id] = plugin.customPrompt;
+      }
     }
+    
     try {
-      await chrome.storage.sync.set({ plugin_states: states });
+      await chrome.storage.sync.set({ 
+        plugin_states: states,
+        plugin_prompts: prompts
+      });
     } catch (e) {
       console.error('Error saving plugin states:', e);
     }

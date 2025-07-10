@@ -31,10 +31,6 @@
       ],
       "js": [
         "src/content.tsx"
-      ],
-      "css": [
-        "src/content.module.css",
-        "src/font.module.css"
       ]
     }
   ],

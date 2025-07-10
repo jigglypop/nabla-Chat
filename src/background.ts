@@ -42,6 +42,25 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
     })()
     return true
   }
+
+  if (messageType === 'UPDATE_PLUGIN_PROMPT') {
+    (async () => {
+      try {
+        const pluginManager = await getPluginManager()
+        const plugin = pluginManager.getPlugin(request.pluginId)
+        if (plugin) {
+          plugin.customPrompt = request.prompt
+          await pluginManager.saveState()
+          sendResponse({ success: true })
+        } else {
+          sendResponse({ success: false, error: 'Plugin not found' })
+        }
+      } catch (error) {
+        sendResponse({ success: false, error: 'Failed to update prompt' })
+      }
+    })()
+    return true
+  }
   
   if (messageType === 'SSE_START') {
     // ... SSE logic ...
