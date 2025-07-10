@@ -15,6 +15,7 @@ let chatContainer: HTMLElement | null = null
 let chatButtonContainer: HTMLElement | null = null
 let chatOpen = false
 let currentActiveElement: HTMLInputElement | HTMLTextAreaElement | null = null
+let isDraggingFloatingUI = false
 
 function createChatButton() {
   if (chatButtonContainer) return
@@ -123,6 +124,20 @@ function createFloatingUI(selection: SelectionInfo) {
   floatingUIContainer.className = styles.floatingUI
   floatingUIContainer.style.position = 'fixed'
   
+  // 드래그 이벤트 감지
+  floatingUIContainer.addEventListener('mousedown', (e) => {
+    const target = e.target as HTMLElement
+    // 헤더나 헤더의 자식 요소를 클릭했는지 확인
+    let currentElement: HTMLElement | null = target
+    while (currentElement && currentElement !== floatingUIContainer) {
+      if (currentElement.getAttribute('data-draggable') === 'true') {
+        isDraggingFloatingUI = true
+        break
+      }
+      currentElement = currentElement.parentElement
+    }
+  })
+  
   // 초기 위치 설정 (마우스 커서 기준)
   let left = selection.position.x - window.scrollX
   let top = selection.position.y - window.scrollY
@@ -186,6 +201,12 @@ function removeFloatingUI() {
 }
 
 document.addEventListener('mouseup', (e) => {
+  // 드래그가 끝났음을 표시
+  if (isDraggingFloatingUI) {
+    isDraggingFloatingUI = false
+    return // 드래그 중이었다면 아무것도 하지 않음
+  }
+  
   // Do nothing if the click is inside the floating UI
   if (floatingUIContainer && floatingUIContainer.contains(e.target as Node)) {
     return

@@ -221,6 +221,7 @@ const FloatingUI: React.FC<FloatingUIProps> = ({ selectedText, onClose, onExecut
         className={styles.floatingHeader}
         onMouseDown={handleMouseDown}
         style={{ cursor: 'move' }}
+        data-draggable="true"
       >
         <span className={styles.floatingTitle}>AI Assistant</span>
         <div className={styles.headerActions}>
