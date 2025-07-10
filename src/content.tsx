@@ -6,7 +6,7 @@ import ChatApp from './containers/ChatApp/ChatApp'
 import styles from './content.module.css'
 import { Provider } from 'jotai'
 import { store } from './atoms/store'
-import { floatingPositionAtom } from './atoms/chatAtoms'
+import { floatingPositionAtom, chatOpenAtom, isDraggingFloatingUIAtom } from './atoms/chatAtoms'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 
 let floatingUIRoot: ReactDOM.Root | null = null
@@ -14,9 +14,8 @@ let floatingUIContainer: HTMLElement | null = null
 let chatRoot: ReactDOM.Root | null = null
 let chatContainer: HTMLElement | null = null
 let chatButtonContainer: HTMLElement | null = null
-let chatOpen = false
-let currentActiveElement: HTMLInputElement | HTMLTextAreaElement | null = null
-let isDraggingFloatingUI = false
+// 상태는 jotai store atom으로 관리
+let currentActiveElement: HTMLInputElement | HTMLTextAreaElement | null = null;
 const queryClient = new QueryClient()
 function createChatButton() {
   if (chatButtonContainer) return
@@ -32,10 +31,14 @@ function createChatButton() {
   const overlay = document.createElement('span')
   overlay.className = styles.chatButtonOverlay
   // 채팅 아이콘 이미지
-  const chatIcon = document.createElement('img')
-  chatIcon.src = chrome.runtime.getURL('profile/title.png')
-  chatIcon.className = `${styles.chatButtonImage} ${styles.chatIcon} chat-icon`
-  chatIcon.alt = 'Open Chat'
+  const chatIcon = document.createElementNS('http://www.w3.org/2000/svg', 'svg')
+  chatIcon.setAttribute('viewBox','0 0 24 24')
+  chatIcon.setAttribute('width','24')
+  chatIcon.setAttribute('height','24')
+  chatIcon.setAttribute('class', `${styles.chatButtonImage} ${styles.chatIcon} chat-icon`)
+  chatIcon.innerHTML = '<path d="M4 4h16v10H5.17L4 15.17V4z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/>'
+  // 버튼 색상을 흰색으로
+  chatIcon.style.color = '#ffffff'
   // 닫기 아이콘 (SVG 유지)
   const closeIcon = document.createElementNS('http://www.w3.org/2000/svg', 'svg')
   closeIcon.setAttribute('class', `${styles.closeIcon} close-icon`)
@@ -53,7 +56,7 @@ function createChatButton() {
 }
 
 function toggleChat() {
-  if (chatOpen) {
+  if (store.get(chatOpenAtom)) {
     closeChatInterface()
   } else {
     openChatInterface()
@@ -81,7 +84,7 @@ function openChatInterface(selectedText?: string) {
       </QueryClientProvider>
     </React.StrictMode>
   )
-  chatOpen = true
+  store.set(chatOpenAtom, true)
   updateButtonIcon()
 
   if (selectedText) {
@@ -103,7 +106,7 @@ function closeChatInterface() {
     chatContainer.remove()
     chatContainer = null
   }
-  chatOpen = false
+  store.set(chatOpenAtom, false)
   updateButtonIcon()
 }
 
@@ -111,7 +114,7 @@ function updateButtonIcon() {
   const button = chatButtonContainer?.querySelector('button')
 
   if (button) {
-    if (chatOpen) {
+    if (store.get(chatOpenAtom)) {
       button.classList.add(styles.chatOpen)
       chatButtonContainer!.style.visibility = 'hidden'
     } else {
@@ -122,7 +125,7 @@ function updateButtonIcon() {
 }
 
 function createFloatingUI(selection: SelectionInfo) {
-  if (chatOpen) return
+  if (store.get(chatOpenAtom)) return
 
   removeFloatingUI()
 
@@ -143,7 +146,7 @@ function createFloatingUI(selection: SelectionInfo) {
     let currentElement: HTMLElement | null = target
     while (currentElement && currentElement !== floatingUIContainer) {
       if (currentElement.getAttribute('data-draggable') === 'true') {
-        isDraggingFloatingUI = true
+        store.set(isDraggingFloatingUIAtom, true)
         break
       }
       currentElement = currentElement.parentElement
@@ -208,8 +211,8 @@ function removeFloatingUI() {
 
 document.addEventListener('mouseup', (e) => {
   // 드래그가 끝났음을 표시
-  if (isDraggingFloatingUI) {
-    isDraggingFloatingUI = false
+  if (store.get(isDraggingFloatingUIAtom)) {
+    store.set(isDraggingFloatingUIAtom, false)
     return // 드래그 중이었다면 아무것도 하지 않음
   }
   
@@ -256,10 +259,10 @@ document.addEventListener('mouseup', (e) => {
       }
     }
 
-    if (selectionInfo && !chatOpen) {
+    if (selectionInfo && !store.get(chatOpenAtom)) {
       createFloatingUI(selectionInfo)
     } else if (!selectionInfo) {
-      const targetIsFloatingUI = floatingUIContainer && floatingUIContainer.contains(e.target as Node);
+      const targetIsFloatingUI = floatingUIContainer && floatingUIContainer.contains(document.activeElement as Node);
       if (!targetIsFloatingUI) {
          removeFloatingUI();
       }
@@ -268,7 +271,7 @@ document.addEventListener('mouseup', (e) => {
 })
 
 function resizeChatWindow(direction: 'larger' | 'smaller') {
-  if (!chatOpen || !chatRoot) return
+  if (!store.get(chatOpenAtom) || !chatRoot) return
 
   window.postMessage({
     type: 'RESIZE_CHAT',
