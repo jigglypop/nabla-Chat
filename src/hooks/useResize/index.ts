@@ -1,4 +1,4 @@
-import { useState, useRef } from 'react'
+import { useState, useRef, useCallback } from 'react'
 
 const useResize = () => {
     const [chatSize, setChatSize] = useState(() => {
@@ -64,10 +64,11 @@ const useResize = () => {
         }
     }
 
-    const onMouseUp = () => {
+    const onMouseUp = useCallback(() => {
         setIsResizing(false)
         setIsDragging(false)
-    }
+    }, [isResizing, isDragging, setIsResizing, setIsDragging])
+
     const onResize = () => {
         setChatPosition((prev: { x: number, y: number }) => ({
             x: Math.max(0, Math.min(window.innerWidth - chatSize.width, prev.x)),

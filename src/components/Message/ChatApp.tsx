@@ -1,9 +1,9 @@
 import React, { useState, useEffect, useRef } from 'react'
 import styles from './ChatApp.module.css'
 import type { ChatAppProps, Message } from './types'
-import { BackgroundSelector } from '../BGSelector'
-import { backgrounds } from '../BGSelector/constants'
-import useResize from '../../hooks/useResize'
+import { BackgroundSelector } from '../../../components/BGSelector'
+import { backgrounds } from '../../../components/BGSelector/constants'
+import useResize from '..'
 
 const ChatApp: React.FC<ChatAppProps> = ({ onClose }) => {
   const {
@@ -38,9 +38,13 @@ const ChatApp: React.FC<ChatAppProps> = ({ onClose }) => {
   const [background, setBackground] = useState(() => {
     return localStorage.getItem('lovebug-background') || 'gradient1';
   });
+  
   const currentBg = backgrounds.find(bg => bg.id === background) || backgrounds[0];
   const isDarkTheme = ['gradient4', 'gradient5', 'gradient6'].includes(background);
 
+  useEffect(() => {
+    scrollToBottom()
+  }, [messages])
 
   useEffect(() => {
     const handleMessage = (event: MessageEvent) => {
@@ -50,9 +54,11 @@ const ChatApp: React.FC<ChatAppProps> = ({ onClose }) => {
           handleSend()
         }, 100)
       } else if (event.data.type === 'RESIZE_CHAT' && event.data.direction) {
+        // 크기 조절 단축키 처리
         setChatSize((prevSize: { width: number, height: number }) => {
           const step = 50
           let newWidth, newHeight
+          
           if (event.data.direction === 'larger') {
             newWidth = Math.min(window.innerWidth - 40, prevSize.width + step)
             newHeight = Math.min(window.innerHeight - 40, prevSize.height + step)
@@ -60,20 +66,37 @@ const ChatApp: React.FC<ChatAppProps> = ({ onClose }) => {
             newWidth = Math.max(320, prevSize.width - step)
             newHeight = Math.max(400, prevSize.height - step)
           }
+          // 크기가 변경되면 위치도 조정해야 할 수 있음
           setChatPosition((prevPos: { x: number, y: number }) => {
+            // 화면 경계를 벗어나지 않도록 위치 조정
             const newX = Math.min(prevPos.x, window.innerWidth - newWidth)
             const newY = Math.min(prevPos.y, window.innerHeight - newHeight)
             return { x: Math.max(0, newX), y: Math.max(0, newY) }
           })
+          
           return { width: newWidth, height: newHeight }
         })
       }
     }
+    
     window.addEventListener('message', handleMessage)
     return () => window.removeEventListener('message', handleMessage)
-  }, [input]) 
+  }, [input]) // input dependency 추가
 
-
+  useEffect(() => {
+    if (isResizing || isDragging) {
+      document.addEventListener('mousemove', onMouseMove)
+      document.addEventListener('mouseup', onMouseUp)
+      document.body.style.cursor = isResizing ? (isResizing + '-resize') : 'move'
+      document.body.style.userSelect = 'none'
+    }
+    return () => {
+      document.removeEventListener('mousemove', onMouseMove)
+      document.removeEventListener('mouseup', onMouseUp)
+      document.body.style.cursor = ''
+      document.body.style.userSelect = ''
+    }
+  }, [isResizing, isDragging, dragStart, chatSize, chatPosition])
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' })
@@ -119,25 +142,6 @@ const ChatApp: React.FC<ChatAppProps> = ({ onClose }) => {
     })
     setIsDragging(true)
   }
-  
-  useEffect(() => {
-   if (isResizing || isDragging) {
-    document.addEventListener('mousemove', onMouseMove)
-    document.addEventListener('mouseup', onMouseUp)
-    document.body.style.cursor = isResizing ? isResizing + '-resize' : 'move'
-    document.body.style.userSelect = 'none'
-   }
-   return () => {
-    document.removeEventListener('mousemove', onMouseMove)
-    document.removeEventListener('mouseup', onMouseUp)
-    document.body.style.cursor = ''
-    document.body.style.userSelect = ''
-   }
-  }, [isResizing, isDragging, dragStart, chatSize, chatPosition])
-
-  useEffect(() => {
-   scrollToBottom()
-  }, [messages])
 
   useEffect(() => {
     localStorage.setItem('lovebug-chat-size', JSON.stringify(chatSize))
@@ -165,6 +169,7 @@ const ChatApp: React.FC<ChatAppProps> = ({ onClose }) => {
       } as React.CSSProperties}
       data-theme={isDarkTheme ? 'dark' : 'light'}
     >
+      {/* 크기 조절 핸들들 */}
       <div className={`${styles.resizeHandle} ${styles.resizeTop}`} onMouseDown={() => setIsResizing('top')} />
       <div className={`${styles.resizeHandle} ${styles.resizeRight}`} onMouseDown={() => setIsResizing('right')} />
       <div className={`${styles.resizeHandle} ${styles.resizeBottom}`} onMouseDown={() => setIsResizing('bottom')} />
@@ -227,6 +232,7 @@ const ChatApp: React.FC<ChatAppProps> = ({ onClose }) => {
 
       {!isMinimized && (
         <>
+          {/* Messages */}
           <div className={styles.messagesContainer}>
             {messages.map((message) => (
               <div key={message.id} className={`${styles.messageWrapper} ${message.role === 'user' ? styles.userMessage : styles.assistantMessage}`}>
@@ -259,6 +265,7 @@ const ChatApp: React.FC<ChatAppProps> = ({ onClose }) => {
             )}
             <div ref={messagesEndRef} />
           </div>
+          {/* Input */}
           <div className={styles.inputContainer}>
             <textarea
               ref={textareaRef}
