@@ -1,7 +1,9 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import styles from './FloatingUI.module.css';
 import { getOpenAIChatCompletion } from '../../services/openai';
 import type { Message } from '../ChatApp/types';
+import { BackgroundSelector } from '../../components/BGSelector';
+import { backgrounds } from '../../components/BGSelector/constants';
 
 interface FloatingUIProps {
   selectedText: string;
@@ -10,11 +12,46 @@ interface FloatingUIProps {
 }
 
 const FloatingUI: React.FC<FloatingUIProps> = ({ selectedText, onClose, onExecutePlugin }) => {
+  const [isExpanded, setIsExpanded] = useState(false);
   const [isExecuting, setIsExecuting] = useState(false);
   const [result, setResult] = useState<string>('');
   const [error, setError] = useState<string | null>(null);
   const [activePlugin, setActivePlugin] = useState<string | null>(null);
+  const [isCtrlPressed, setIsCtrlPressed] = useState(false);
+  const [background, setBackground] = useState(() => {
+    return localStorage.getItem('lovebug-floating-background') || 'gradient1';
+  });
   const containerRef = useRef<HTMLDivElement>(null);
+
+  const currentBg = backgrounds.find(bg => bg.id === background) || backgrounds[0];
+  const isDarkTheme = ['gradient4', 'gradient5', 'gradient6'].includes(background);
+
+  useEffect(() => {
+    localStorage.setItem('lovebug-floating-background', background);
+  }, [background]);
+
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.ctrlKey || e.metaKey) {
+        setIsCtrlPressed(true);
+        setIsExpanded(true);
+      }
+    };
+
+    const handleKeyUp = (e: KeyboardEvent) => {
+      if (!e.ctrlKey && !e.metaKey) {
+        setIsCtrlPressed(false);
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    window.addEventListener('keyup', handleKeyUp);
+
+    return () => {
+      window.removeEventListener('keydown', handleKeyDown);
+      window.removeEventListener('keyup', handleKeyUp);
+    };
+  }, []);
 
   const handlePluginClick = async (pluginId: string) => {
     if (isExecuting) return;
@@ -54,15 +91,53 @@ const FloatingUI: React.FC<FloatingUIProps> = ({ selectedText, onClose, onExecut
     }
   };
 
-  return (
-    <div ref={containerRef} className={styles.floatingContainer}>
-      <div className={styles.floatingHeader}>
-        <span className={styles.floatingTitle}>AI Assistant</span>
-        <button className={styles.closeBtn} onClick={onClose} title="닫기">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
-            <path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/>
+  const toggleExpanded = () => {
+    setIsExpanded(!isExpanded);
+  };
+
+  // 컴팩트 모드
+  if (!isExpanded) {
+    return (
+      <div 
+        ref={containerRef} 
+        className={styles.compactContainer}
+        style={{ 
+          '--chat-bg': currentBg.value,
+        } as React.CSSProperties}
+        data-theme={isDarkTheme ? 'dark' : 'light'}
+      >
+        <button className={styles.compactButton} onClick={toggleExpanded} title="AI Assistant (Ctrl 키로도 열기)">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm-7 12h-2v-2h2v2zm0-4h-2V6h2v4z"/>
           </svg>
         </button>
+        <span className={styles.tooltip}>AI Assistant</span>
+      </div>
+    );
+  }
+
+  // 확장 모드
+  return (
+    <div 
+      ref={containerRef} 
+      className={styles.floatingContainer}
+      style={{ 
+        '--chat-bg': currentBg.value,
+      } as React.CSSProperties}
+      data-theme={isDarkTheme ? 'dark' : 'light'}
+    >
+      <div className={styles.floatingHeader}>
+        <span className={styles.floatingTitle}>AI Assistant</span>
+        <div className={styles.headerActions}>
+          <div className={styles.bgSelectorWrapper}>
+            <BackgroundSelector background={background} setBackground={setBackground} />
+          </div>
+          <button className={styles.closeBtn} onClick={onClose} title="닫기">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/>
+            </svg>
+          </button>
+        </div>
       </div>
       
       <div className={styles.floatingActions}>

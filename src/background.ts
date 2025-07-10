@@ -1,5 +1,5 @@
 import type { Message } from './types'
-import { getPluginManager } from './plugins/PluginManager';
+import { pluginManager } from './plugins/PluginManager';
 import { sseClient } from './utils/sse'
 
 chrome.runtime.onInstalled.addListener(() => {
@@ -28,11 +28,10 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
   if (request.type === 'EXECUTE_PLUGIN') {
     (async () => {
       try {
-        const pluginManager = await getPluginManager();
         const result = await pluginManager.executePlugin(request.pluginId, request.text);
         sendResponse(result);
       } catch (error) {
-        sendResponse({ success: false, error: 'Plugin manager failed to initialize.' });
+        sendResponse({ success: false, error: 'Plugin execution failed.' });
       }
     })();
     return true; // 비동기 응답을 위해 true를 반환해야 함

@@ -1,4 +1,8 @@
 import type { FeaturePlugin, FeatureResult } from '../types/features';
+import { summarizePlugin } from './features/summarize';
+import { translatePlugin } from './features/translate';
+import { rewritePlugin } from './features/rewrite';
+import { explainPlugin } from './features/explain';
 
 class PluginManager {
   private plugins: Map<string, FeaturePlugin> = new Map();
@@ -7,20 +11,12 @@ class PluginManager {
     this.registerDefaultPlugins();
   }
 
-  private async registerDefaultPlugins() {
-    const pluginModules = import.meta.glob('./features/*.ts') as Record<
-      string,
-      () => Promise<{ [key: string]: FeaturePlugin }>
-    >;
-
-    for (const path in pluginModules) {
-      const module = await pluginModules[path]();
-      for (const key in module) {
-        if (module[key] && typeof module[key] === 'object' && 'id' in module[key]) {
-          this.registerPlugin(module[key]);
-        }
-      }
-    }
+  private registerDefaultPlugins() {
+    // 정적으로 플러그인들을 등록
+    this.registerPlugin(summarizePlugin);
+    this.registerPlugin(translatePlugin);
+    this.registerPlugin(rewritePlugin);
+    this.registerPlugin(explainPlugin);
   }
 
   registerPlugin(plugin: FeaturePlugin) {
@@ -64,14 +60,5 @@ class PluginManager {
   }
 }
 
-const initializePluginManager = async () => {
-  const manager = new PluginManager();
-  await (manager as any).registerDefaultPlugins();
-  return manager;
-};
-
-export const pluginManagerPromise = initializePluginManager();
-
-export const getPluginManager = async () => {
-  return await pluginManagerPromise;
-}; 
+export const pluginManager = new PluginManager();
+export const getPluginManager = async () => pluginManager; 
