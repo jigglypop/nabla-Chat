@@ -9,9 +9,10 @@ interface FloatingUIProps {
   selectedText: string;
   onClose: () => void;
   onExecutePlugin: (pluginId: string, text: string) => Promise<void>;
+  activeElement?: HTMLInputElement | HTMLTextAreaElement | null;
 }
 
-const FloatingUI: React.FC<FloatingUIProps> = ({ selectedText, onClose, onExecutePlugin }) => {
+const FloatingUI: React.FC<FloatingUIProps> = ({ selectedText, onClose, onExecutePlugin, activeElement }) => {
   const [isExpanded, setIsExpanded] = useState(false);
   const [isExecuting, setIsExecuting] = useState(false);
   const [result, setResult] = useState<string>('');
@@ -93,6 +94,31 @@ const FloatingUI: React.FC<FloatingUIProps> = ({ selectedText, onClose, onExecut
 
   const toggleExpanded = () => {
     setIsExpanded(!isExpanded);
+  };
+
+  const handleCopyResult = () => {
+    if (result) {
+      navigator.clipboard.writeText(result);
+    }
+  };
+
+  const handleReplaceText = () => {
+    if (result && activeElement) {
+      const start = activeElement.selectionStart || 0;
+      const end = activeElement.selectionEnd || 0;
+      const currentValue = activeElement.value;
+      
+      const newValue = currentValue.substring(0, start) + result + currentValue.substring(end);
+      activeElement.value = newValue;
+      
+      // 이벤트 발생시켜 React 등의 상태 업데이트 트리거
+      const event = new Event('input', { bubbles: true });
+      activeElement.dispatchEvent(event);
+      
+      // 포커스 복원
+      activeElement.focus();
+      activeElement.setSelectionRange(start + result.length, start + result.length);
+    }
   };
 
   // 컴팩트 모드
@@ -187,7 +213,25 @@ const FloatingUI: React.FC<FloatingUIProps> = ({ selectedText, onClose, onExecut
         <div className={styles.floatingResult}>
           {isExecuting && <div className={styles.loading}>처리 중...</div>}
           {error && <div className={styles.error}>{error}</div>}
-          {result && !isExecuting && <div className={styles.resultText}>{result}</div>}
+          {result && !isExecuting && (
+            <>
+              <div className={styles.resultText}>{result}</div>
+              <div className={styles.resultActions}>
+                <button className={styles.actionBtn} onClick={handleCopyResult} title="복사">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/>
+                  </svg>
+                </button>
+                {activeElement && (
+                  <button className={styles.actionBtn} onClick={handleReplaceText} title="텍스트 교체">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
+                      <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
+                    </svg>
+                  </button>
+                )}
+              </div>
+            </>
+          )}
         </div>
       )}
     </div>

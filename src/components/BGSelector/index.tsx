@@ -11,7 +11,8 @@ export function BackgroundSelector({ background, setBackground }: BGSelector) {
             key={bg.id}
             className={`${styles.trafficLight} ${background === bg.id ? styles.active : ''}`}
             style={{ background: bg.color }}
-            onClick={() => {
+            onClick={(e) => {
+              e.stopPropagation();
               setBackground(bg.id);
               localStorage.setItem('lovebug-background', bg.id);
             }}

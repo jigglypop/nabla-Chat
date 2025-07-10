@@ -233,6 +233,45 @@
   word-break: break-word;
 }
 
+.resultActions {
+  display: flex;
+  gap: 4px;
+  margin-top: 8px;
+  padding-top: 8px;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.actionBtn {
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 4px;
+  padding: 4px 8px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s;
+  color: inherit;
+}
+
+.actionBtn:hover {
+  background: rgba(255, 255, 255, 0.2);
+  transform: translateY(-1px);
+}
+
+.floatingContainer[data-theme="light"] .resultActions {
+  border-top-color: rgba(0, 0, 0, 0.1);
+}
+
+.floatingContainer[data-theme="light"] .actionBtn {
+  background: rgba(0, 0, 0, 0.05);
+  border-color: rgba(0, 0, 0, 0.1);
+}
+
+.floatingContainer[data-theme="light"] .actionBtn:hover {
+  background: rgba(0, 0, 0, 0.1);
+}
+
 /* 스크롤바 스타일 */
 .floatingResult::-webkit-scrollbar {
   width: 4px;

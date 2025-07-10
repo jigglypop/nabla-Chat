@@ -34,12 +34,7 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
         sendResponse({ success: false, error: 'Plugin execution failed.' });
       }
     })();
-    return true; // 비동기 응답을 위해 true를 반환해야 함
-  }
-  
-  // SSE 관련 로직은 유지
-  if (request.type === 'SSE_START') {
-    // ...
+    return true; 
   }
   return true; 
 });
