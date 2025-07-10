@@ -37,7 +37,7 @@ const ChatApp: React.FC<ChatAppProps> = ({ onClose }) => {
   const [chatPosition, setChatPosition] = useAtom(chatPositionAtom);
   const [chatSize, setChatSize] = useAtom(chatSizeAtom);
 
-  const { sendMessage, isLoading } = useAIChat();
+  const { sendMessage, isLoading, isConnected } = useAIChat();
 
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
@@ -144,7 +144,7 @@ const ChatApp: React.FC<ChatAppProps> = ({ onClose }) => {
       data-background={background}
     >
       <div className={`${styles.resizeHandle} ${styles.resizeTop}`} onMouseDown={() => setIsResizing('top')} />
-      <div className={`${styles.resizeHandle} ${styles.resizeRight}`} onMouseDown={() => setIsResizing('right')} />
+      {/* 우측 리사이즈 핸들 제거 - 스크롤바와 겹침 */}
       <div className={`${styles.resizeHandle} ${styles.resizeBottom}`} onMouseDown={() => setIsResizing('bottom')} />
       <div className={`${styles.resizeHandle} ${styles.resizeLeft}`} onMouseDown={() => setIsResizing('left')} />
       <div className={`${styles.resizeHandle} ${styles.resizeTopLeft}`} onMouseDown={() => setIsResizing('top-left')} />
@@ -168,9 +168,15 @@ const ChatApp: React.FC<ChatAppProps> = ({ onClose }) => {
           </div>
           <div>
             <p className={styles.title}>∇·Chat</p>
-            <span className={styles.status}>
-              <span className={styles.statusDot}></span>
-              연결중
+            <span className={`${styles.status} ${isConnected === false ? styles.disconnected : ''}`}>
+              <span className={`${styles.statusDot} ${
+                isConnected === null ? styles.checking : 
+                isConnected ? styles.connected : 
+                styles.disconnected
+              }`}></span>
+              {isConnected === null ? '연결 확인 중...' : 
+               isConnected ? '연결됨' : 
+               '연결 안됨'}
             </span>
           </div>
         </div>

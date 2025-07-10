@@ -4,7 +4,6 @@ import { sseClient } from './utils/sse'
 
 chrome.runtime.onInstalled.addListener(() => {
   console.log('Lovebug extension installed or updated.')
-  // 초기 플러그인 상태 설정
   getPluginManager().then(manager => {
     manager.saveState()
   })
@@ -12,7 +11,6 @@ chrome.runtime.onInstalled.addListener(() => {
 
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
   const messageType = request.type
-
   if (messageType === 'EXECUTE_PLUGIN') {
     (async () => {
       try {
@@ -63,10 +61,8 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
   }
   
   if (messageType === 'SSE_START') {
-    // ... SSE logic ...
     return true;
   }
-  
   return true;
 })
 

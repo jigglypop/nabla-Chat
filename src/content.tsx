@@ -58,7 +58,12 @@ function toggleChat() {
 
 function openChatInterface(selectedText?: string) {
   removeFloatingUI()
-  if (chatContainer) return
+  
+  // 기존 채팅 컨테이너가 있으면 제거
+  if (chatContainer) {
+    closeChatInterface()
+  }
+  
   chatContainer = document.createElement('div')
   chatContainer.id = 'nabla-chat-app'
   document.body.appendChild(chatContainer)

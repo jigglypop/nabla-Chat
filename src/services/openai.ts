@@ -20,6 +20,39 @@ const getAPISettings = async (): Promise<APISettings> => {
   return result.apiSettings;
 };
 
+// API 연결 상태 확인 함수
+export const checkAPIConnection = async (): Promise<boolean> => {
+  try {
+    const settings = await getAPISettings();
+    
+    if (!settings.apiKey) {
+      return false;
+    }
+
+    // 간단한 테스트 요청 (최소한의 토큰 사용)
+    const response = await fetch(settings.endpoint, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${settings.apiKey}`
+      },
+      body: JSON.stringify({
+        model: settings.modelType === 'openai' ? 'gpt-3.5-turbo' : 'claude-3-opus',
+        messages: [{ role: 'user', content: 'test' }],
+        max_tokens: 1,
+        stream: false
+      })
+    });
+
+    // 401은 인증 실패, 다른 에러는 연결은 되지만 다른 문제
+    return response.ok || (response.status !== 401 && response.status !== 403);
+  } catch (error) {
+    // 네트워크 에러 등
+    console.error('Connection check failed:', error);
+    return false;
+  }
+};
+
 export const getOpenAIChatCompletion = async (messages: Message[]) => {
   try {
     const settings = await getAPISettings();

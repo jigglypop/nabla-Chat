@@ -343,21 +343,47 @@
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 
-/* 스크롤바 스타일 */
+/* 스크롤바 스타일링 */
 .floatingResult::-webkit-scrollbar {
-  width: 4px;
+  width: 6px;
 }
 
 .floatingResult::-webkit-scrollbar-track {
   background: rgba(255, 255, 255, 0.05);
-  border-radius: 2px;
+  border-radius: 3px;
 }
 
 .floatingResult::-webkit-scrollbar-thumb {
   background: rgba(255, 255, 255, 0.2);
-  border-radius: 2px;
+  border-radius: 3px;
+  transition: background 0.2s ease;
 }
 
 .floatingResult::-webkit-scrollbar-thumb:hover {
   background: rgba(255, 255, 255, 0.3);
+}
+
+/* 배경별 스크롤바 색상 */
+.floatingContainer[data-theme="light"] .floatingResult::-webkit-scrollbar-track {
+  background: rgba(0, 0, 0, 0.05);
+}
+
+.floatingContainer[data-theme="light"] .floatingResult::-webkit-scrollbar-thumb {
+  background: rgba(0, 0, 0, 0.2);
+}
+
+.floatingContainer[data-theme="light"] .floatingResult::-webkit-scrollbar-thumb:hover {
+  background: rgba(0, 0, 0, 0.3);
+}
+
+.floatingContainer[data-theme="dark"] .floatingResult::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.floatingContainer[data-theme="dark"] .floatingResult::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.15);
+}
+
+.floatingContainer[data-theme="dark"] .floatingResult::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.25);
 } 
