@@ -21,6 +21,9 @@ export const isConnectedAtom = atom<boolean | null>(null);
 // 연결 체크 완료 여부
 export const hasCheckedConnectionAtom = atom<boolean>(false);
 
+// 사용자 프로필 atom
+export const userProfileAtom = atomWithStorage<string | null>('userProfile', null);
+
 // FloatingUI용 atom들
 export const floatingPositionAtom = atom({ x: 0, y: 0 });
 export const floatingBackgroundAtom = atom<string>('glass1'); 

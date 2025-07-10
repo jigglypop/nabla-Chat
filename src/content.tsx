@@ -17,29 +17,33 @@ let chatButtonContainer: HTMLElement | null = null
 let chatOpen = false
 let currentActiveElement: HTMLInputElement | HTMLTextAreaElement | null = null
 let isDraggingFloatingUI = false
-
 const queryClient = new QueryClient()
-
 function createChatButton() {
   if (chatButtonContainer) return
   chatButtonContainer = document.createElement('div')
   chatButtonContainer.id = 'nabla-chat-button'
+  // 인라인 스타일로 position fixed 보장
+  chatButtonContainer.style.position = 'fixed'
+  chatButtonContainer.style.bottom = '30px'
+  chatButtonContainer.style.right = '30px'
+  chatButtonContainer.style.zIndex = '2147483640'
   const button = document.createElement('button')
   button.className = styles.chatButton
   const overlay = document.createElement('span')
   overlay.className = styles.chatButtonOverlay
-  const chatIcon = document.createElementNS('http://www.w3.org/2000/svg', 'svg')
-  chatIcon.setAttribute('class', `${styles.chatIcon} chat-icon`)
-  chatIcon.setAttribute('width', '24')
-  chatIcon.setAttribute('height', '24')
-  chatIcon.setAttribute('viewBox', '0 0 24 24')
-  chatIcon.innerHTML = '<path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2z"/>'
+  // 채팅 아이콘 이미지
+  const chatIcon = document.createElement('img')
+  chatIcon.src = chrome.runtime.getURL('profile/title.png')
+  chatIcon.className = `${styles.chatButtonImage} ${styles.chatIcon} chat-icon`
+  chatIcon.alt = 'Open Chat'
+  // 닫기 아이콘 (SVG 유지)
   const closeIcon = document.createElementNS('http://www.w3.org/2000/svg', 'svg')
   closeIcon.setAttribute('class', `${styles.closeIcon} close-icon`)
   closeIcon.setAttribute('width', '24')
   closeIcon.setAttribute('height', '24')
   closeIcon.setAttribute('viewBox', '0 0 24 24')
   closeIcon.innerHTML = '<path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/>'
+  
   button.appendChild(overlay)
   button.appendChild(chatIcon)
   button.appendChild(closeIcon)
@@ -109,10 +113,10 @@ function updateButtonIcon() {
   if (button) {
     if (chatOpen) {
       button.classList.add(styles.chatOpen)
-      chatButtonContainer!.style.display = 'none'
+      chatButtonContainer!.style.visibility = 'hidden'
     } else {
       button.classList.remove(styles.chatOpen)
-      chatButtonContainer!.style.display = 'block'
+      chatButtonContainer!.style.visibility = 'visible'
     }
   }
 }
@@ -128,12 +132,10 @@ function createFloatingUI(selection: SelectionInfo) {
   } else {
     currentActiveElement = null
   }
-
   floatingUIContainer = document.createElement('div')
   floatingUIContainer.id = 'nabla-floating-ui'
   floatingUIContainer.className = styles.floatingUI
   floatingUIContainer.style.position = 'fixed'
-  
   // 드래그 이벤트 감지
   floatingUIContainer.addEventListener('mousedown', (e) => {
     const target = e.target as HTMLElement
@@ -151,38 +153,30 @@ function createFloatingUI(selection: SelectionInfo) {
   // 초기 위치 설정 (마우스 커서 기준)
   let left = selection.position.x - window.scrollX
   let top = selection.position.y - window.scrollY
-  
   // 뷰포트 경계 체크
   const viewportWidth = window.innerWidth
   const viewportHeight = window.innerHeight
   const estimatedWidth = 300 // FloatingUI의 예상 너비
   const estimatedHeight = 200 // FloatingUI의 예상 높이
-  
   // 화면 오른쪽을 벗어나는 경우
   if (left + estimatedWidth > viewportWidth - 10) {
     left = viewportWidth - estimatedWidth - 10
   }
-  
   // 화면 아래를 벗어나는 경우
   if (top + estimatedHeight > viewportHeight - 10) {
     top = viewportHeight - estimatedHeight - 10
   }
-  
   // 화면 왼쪽을 벗어나는 경우
   if (left < 10) {
     left = 10
   }
-  
   // 화면 위를 벗어나는 경우
   if (top < 10) {
     top = 10
   }
-  
   // Jotai atom에 위치 저장
   store.set(floatingPositionAtom, { x: left, y: top })
-  
   document.body.appendChild(floatingUIContainer)
-  
   floatingUIRoot = ReactDOM.createRoot(floatingUIContainer)
   floatingUIRoot.render(
     <React.StrictMode>
@@ -281,28 +275,21 @@ function resizeChatWindow(direction: 'larger' | 'smaller') {
     direction: direction,
   }, '*')
 }
-
-// chrome.runtime API가 로드되었는지 확인 후 리스너 추가
 if (chrome.runtime && chrome.runtime.onMessage) {
   chrome.runtime.onMessage.addListener((message: Message) => {
     if (message.type === 'SELECTION_CHANGED' && message.payload?.selectedText) {
       // This part seems complex, let's simplify or rely on mouseup
     } else if (message.type === 'COMMAND' && message.payload?.command) {
       const command = message.payload.command;
-
       switch (command) {
         case 'send-to-ai':
-          // This command logic might be redundant with the mouseup listener
           break;
-
         case 'toggle-chat':
           toggleChat();
           break;
-
         case 'resize-larger':
           resizeChatWindow('larger');
           break;
-
         case 'resize-smaller':
           resizeChatWindow('smaller');
           break;

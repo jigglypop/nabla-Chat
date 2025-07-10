@@ -13,7 +13,8 @@ import {
   isMinimizedAtom,
   backgroundAtom,
   chatPositionAtom,
-  chatSizeAtom
+  chatSizeAtom,
+  userProfileAtom
 } from '../../atoms/chatAtoms';
 
 const ChatApp: React.FC<ChatAppProps> = ({ onClose }) => {
@@ -36,6 +37,7 @@ const ChatApp: React.FC<ChatAppProps> = ({ onClose }) => {
   const [background, setBackground] = useAtom(backgroundAtom);
   const [chatPosition, setChatPosition] = useAtom(chatPositionAtom);
   const [chatSize, setChatSize] = useAtom(chatSizeAtom);
+  const [userProfile] = useAtom(userProfileAtom);
 
   const { sendMessage, isLoading, isConnected } = useAIChat();
 
@@ -225,7 +227,23 @@ const ChatApp: React.FC<ChatAppProps> = ({ onClose }) => {
             {messages.map((message) => (
               <div key={message.id} className={`${styles.messageWrapper} ${message.role === 'user' ? styles.userMessage : styles.assistantMessage}`}>
                 <div className={`${styles.avatar} ${message.role === 'user' ? styles.userAvatar : styles.assistantAvatar}`}>
-                  <span>{message.role === 'user' ? '👤' : '🤖'}</span>
+                  {message.role === 'user' ? (
+                    userProfile ? (
+                      <img 
+                        src={userProfile} 
+                        alt="User"
+                        className={styles.userAvatarImage}
+                      />
+                    ) : (
+                      <span>👤</span>
+                    )
+                  ) : (
+                    <img 
+                      src={chrome.runtime.getURL('profile/nchat.png')} 
+                      alt="AI Assistant"
+                      className={styles.avatarImage}
+                    />
+                  )}
                 </div>
                 <div className={styles.messageContent}>
                   <div className={`${styles.messageBubble} ${message.role === 'user' ? styles.userBubble : styles.assistantBubble}`}>
@@ -240,7 +258,11 @@ const ChatApp: React.FC<ChatAppProps> = ({ onClose }) => {
             {isLoading && (
               <div className={`${styles.messageWrapper} ${styles.assistantMessage}`}>
                 <div className={`${styles.avatar} ${styles.assistantAvatar}`}>
-                  <span>🤖</span>
+                  <img 
+                    src={chrome.runtime.getURL('profile/nchat.png')} 
+                    alt="AI Assistant"
+                    className={styles.avatarImage}
+                  />
                 </div>
                 <div className={`${styles.messageBubble} ${styles.assistantBubble} ${styles.typingBubble}`}>
                   <div className={styles.typingIndicator}>

@@ -31,24 +31,60 @@ body {
   height: 100%;
   padding: 10px;
 }
-.chatButton {
+#nabla-chat-button {
   position: fixed;
   bottom: 20px;
   right: 20px;
+  z-index: 2147483640;
+}
+
+.chatButton {
   width: 60px;
   height: 60px;
   border-radius: 50%;
-  background: linear-gradient(to bottom right, #12c2e9, #c471ed, #f64f59);
+  background: linear-gradient(135deg, #12c2e9, #c471ed, #f64f59);
   border: none;
   cursor: pointer;
-  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
-  z-index: 2147483640;
-  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
-  overflow: hidden;
-  padding: 0;
   display: flex;
   align-items: center;
   justify-content: center;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+  padding: 8px;
+}
+
+.chatButtonImage {
+  width: 100%;
+  height: 100%;
+  max-width: 44px;
+  max-height: 44px;
+  object-fit: contain;
+  transition: all 0.3s ease;
+  position: absolute;
+  opacity: 1;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+.chatButtonImage.chatIcon {
+  opacity: 1;
+}
+
+.chatButtonImage.closeIcon {
+  opacity: 0;
+}
+
+.chatButton.chatOpen .chatButtonImage.chatIcon {
+  opacity: 0;
+  transform: translate(-50%, -50%) rotate(90deg);
+}
+
+.chatButton.chatOpen .chatButtonImage.closeIcon {
+  opacity: 1;
+  transform: translate(-50%, -50%) rotate(0deg);
 }
 .chatButton:hover {
   box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.5);
@@ -68,29 +104,22 @@ body {
 .chatButton:hover .chatButtonOverlay {
   transform: scale(1);
 }
-.chatIcon,
+
 .closeIcon {
-  width: 28px;
-  height: 28px;
-  position: relative;
-  z-index: 10;
-  transition: all 0.15s;
-  fill: white;
-}
-.closeIcon {
+  width: 24px;
+  height: 24px;
   position: absolute;
   top: 50%;
   left: 50%;
-  transform: translate(-50%, -50%) rotate(90deg) scale(0);
+  transform: translate(-50%, -50%);
+  opacity: 0;
+  transition: all 0.3s ease;
+  fill: white;
 }
-.chatIcon {
-  transform: rotate(0) scale(1);
-}
-.chatOpen .chatIcon {
-  transform: rotate(90deg) scale(0);
-}
-.chatOpen .closeIcon {
-  transform: translate(-50%, -50%) rotate(0) scale(1);
+
+.chatButton.chatOpen .closeIcon {
+  opacity: 1;
+  transform: translate(-50%, -50%) rotate(0);
 }
 
 .floatingUI {

@@ -68,13 +68,8 @@
   },
   "web_accessible_resources": [
     {
-      "resources": [
-        "assets/*",
-        "fonts/*"
-      ],
-      "matches": [
-        "<all_urls>"
-      ]
+      "resources": ["profile/title.png", "profile/nchat.png"],
+      "matches": ["<all_urls>"]
     }
   ]
 } 

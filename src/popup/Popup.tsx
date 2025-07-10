@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import type { FeaturePlugin } from '../types/features';
 import styles from './Popup.module.css';
 
@@ -167,7 +167,7 @@ function Popup() {
                       checked={plugin.enabled}
                       onChange={() => handleToggle(plugin.id)} 
                     />
-                    <span className={styles.slider + ' ' + styles.round}></span>
+                    <span className={`${styles.slider} ${styles.round}`}></span>
                   </label>
                 </div>
                 {expandedPlugin === plugin.id && (
