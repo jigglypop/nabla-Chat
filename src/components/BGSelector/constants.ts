@@ -1,9 +1,15 @@
 export const backgrounds = [
   {
-    id: 'gradient1',
-    name: 'Sunset Ocean',
-    value: 'linear-gradient(135deg, rgba(255, 94, 98, 0.3), rgba(255, 154, 0, 0.3), rgba(237, 117, 255, 0.3))',
-    color: '#FF5E62'
+    id: 'gradient6',
+    name: 'Black Night',
+    value: 'linear-gradient(135deg, rgba(20, 20, 20, 0.9), rgba(35, 35, 35, 0.9), rgba(10, 10, 10, 0.9))',
+    color: '#1A1A1A'
+  },
+  {
+    id: 'glass1',
+    name: 'White Glass',
+    value: 'linear-gradient(135deg, rgba(255, 255, 255, 0.7), rgba(255, 255, 255, 0.5), rgba(255, 255, 255, 0.3))',
+    color: '#FFFFFF'
   },
   {
     id: 'gradient2',
@@ -16,11 +22,5 @@ export const backgrounds = [
     name: 'Forest Dream',
     value: 'linear-gradient(135deg, rgba(0, 255, 135, 0.3), rgba(96, 239, 255, 0.3), rgba(0, 133, 255, 0.3))',
     color: '#00FF87'
-  },
-  {
-    id: 'gradient6',
-    name: 'Black Night',
-    value: 'linear-gradient(135deg, rgba(20, 20, 20, 0.9), rgba(35, 35, 35, 0.9), rgba(10, 10, 10, 0.9))',
-    color: '#1A1A1A'
   }
 ];

@@ -8,9 +8,11 @@
   width: 36px;
   height: 36px;
   background: var(--chat-bg);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
   border: 1px solid rgba(255, 255, 255, 0.2);
   border-radius: 50%;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -19,9 +21,19 @@
   color: white;
 }
 
+/* 라이트 테마용 컴팩트 버튼 */
+.compactContainer[data-theme="light"] .compactButton {
+  border: 1px solid rgba(255, 255, 255, 0.4);
+  box-shadow: 0 4px 12px rgba(31, 38, 135, 0.1);
+}
+
+.compactContainer[data-theme="light"] .compactButton:hover {
+  box-shadow: 0 6px 20px rgba(31, 38, 135, 0.2);
+}
+
 .compactButton:hover {
   transform: scale(1.1);
-  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
 }
 
 .tooltip {
@@ -48,9 +60,11 @@
 .floatingContainer {
   position: fixed;
   background: var(--chat-bg);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 8px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 12px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
   padding: 8px;
   min-width: 240px;
   max-width: 300px;
@@ -72,6 +86,7 @@
 /* 다크 테마 */
 .floatingContainer[data-theme="dark"] {
   color: #fff;
+  border-color: rgba(255, 255, 255, 0.1);
 }
 
 .floatingContainer[data-theme="dark"] .floatingHeader {
@@ -90,39 +105,53 @@
   color: #fff;
 }
 
-/* 라이트 테마 */
+/* 라이트 테마 (글래스모피즘) */
 .floatingContainer[data-theme="light"] {
-  color: #333;
+  color: #1a1a1a;
+  background: var(--chat-bg);
+  border-color: rgba(255, 255, 255, 0.3);
+  box-shadow: 0 8px 32px rgba(31, 38, 135, 0.15);
 }
 
 .floatingContainer[data-theme="light"] .floatingHeader {
-  border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.2);
 }
 
 .floatingContainer[data-theme="light"] .floatingTitle {
-  color: #333;
+  color: #1a1a1a;
+  font-weight: 600;
 }
 
 .floatingContainer[data-theme="light"] .floatingBtn {
-  background: rgba(0, 0, 0, 0.05);
-  border-color: rgba(0, 0, 0, 0.1);
-  color: #333;
+  background: rgba(255, 255, 255, 0.3);
+  border: 1px solid rgba(255, 255, 255, 0.4);
+  color: #1a1a1a;
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
 }
 
 .floatingContainer[data-theme="light"] .floatingBtn:hover {
-  background: rgba(0, 0, 0, 0.1);
-  border-color: rgba(0, 0, 0, 0.2);
+  background: rgba(255, 255, 255, 0.5);
+  border-color: rgba(255, 255, 255, 0.6);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 
 .floatingContainer[data-theme="light"] .floatingResult {
-  background: rgba(0, 0, 0, 0.03);
-  border-color: rgba(0, 0, 0, 0.1);
-  color: #333;
+  background: rgba(255, 255, 255, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  color: #1a1a1a;
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
 }
 
 .floatingContainer[data-theme="light"] .closeBtn {
-  color: #333;
-  opacity: 0.6;
+  color: #1a1a1a;
+  opacity: 0.7;
+}
+
+.floatingContainer[data-theme="light"] .closeBtn:hover {
+  opacity: 1;
+  background: rgba(255, 255, 255, 0.3);
 }
 
 /* 헤더 */
@@ -134,6 +163,8 @@
   padding: 8px 12px;
   border-bottom: 1px solid rgba(255, 255, 255, 0.1);
   min-height: 36px;
+  cursor: move;
+  user-select: none;
 }
 
 .floatingTitle {
@@ -195,14 +226,15 @@
 }
 
 .floatingContainer[data-theme="light"] .selectedTextContainer {
-  background: rgba(0, 0, 0, 0.04);
-  border-color: rgba(0, 0, 0, 0.08);
+  background: rgba(255, 255, 255, 0.3);
+  border-color: rgba(255, 255, 255, 0.4);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
 }
 
 .floatingContainer[data-theme="light"] .selectedText {
-  color: #555;
+  color: #333;
 }
-
 
 /* 액션 버튼들 */
 .floatingActions {
@@ -296,16 +328,19 @@
 }
 
 .floatingContainer[data-theme="light"] .resultActions {
-  border-top-color: rgba(0, 0, 0, 0.1);
+  border-top-color: rgba(255, 255, 255, 0.3);
 }
 
 .floatingContainer[data-theme="light"] .actionBtn {
-  background: rgba(0, 0, 0, 0.05);
-  border-color: rgba(0, 0, 0, 0.1);
+  background: rgba(255, 255, 255, 0.3);
+  border-color: rgba(255, 255, 255, 0.4);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
 }
 
 .floatingContainer[data-theme="light"] .actionBtn:hover {
-  background: rgba(0, 0, 0, 0.1);
+  background: rgba(255, 255, 255, 0.5);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 
 /* 스크롤바 스타일 */

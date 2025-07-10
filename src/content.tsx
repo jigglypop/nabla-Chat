@@ -4,6 +4,9 @@ import type { Message, SelectionInfo } from './types'
 import FloatingUI from './containers/FloatingUI/FloatingUI'
 import ChatApp from './containers/ChatApp/ChatApp'
 import styles from './content.module.css'
+import { Provider } from 'jotai'
+import { store } from './atoms/store'
+import { floatingPositionAtom } from './atoms/chatAtoms'
 
 let floatingUIRoot: ReactDOM.Root | null = null
 let floatingUIContainer: HTMLElement | null = null
@@ -58,7 +61,9 @@ function openChatInterface(selectedText?: string) {
   chatRoot = ReactDOM.createRoot(chatContainer)
   chatRoot.render(
     <React.StrictMode>
-      <ChatApp onClose={closeChatInterface} />
+      <Provider store={store}>
+        <ChatApp onClose={closeChatInterface} />
+      </Provider>
     </React.StrictMode>
   )
   chatOpen = true
@@ -122,56 +127,50 @@ function createFloatingUI(selection: SelectionInfo) {
   let left = selection.position.x - window.scrollX
   let top = selection.position.y - window.scrollY
   
-  // 임시로 렌더링하여 크기 측정
-  floatingUIContainer.style.visibility = 'hidden'
-  floatingUIContainer.style.left = '0px'
-  floatingUIContainer.style.top = '0px'
+  // 뷰포트 경계 체크
+  const viewportWidth = window.innerWidth
+  const viewportHeight = window.innerHeight
+  const estimatedWidth = 300 // FloatingUI의 예상 너비
+  const estimatedHeight = 200 // FloatingUI의 예상 높이
+  
+  // 화면 오른쪽을 벗어나는 경우
+  if (left + estimatedWidth > viewportWidth - 10) {
+    left = viewportWidth - estimatedWidth - 10
+  }
+  
+  // 화면 아래를 벗어나는 경우
+  if (top + estimatedHeight > viewportHeight - 10) {
+    top = viewportHeight - estimatedHeight - 10
+  }
+  
+  // 화면 왼쪽을 벗어나는 경우
+  if (left < 10) {
+    left = 10
+  }
+  
+  // 화면 위를 벗어나는 경우
+  if (top < 10) {
+    top = 10
+  }
+  
+  // Jotai atom에 위치 저장
+  store.set(floatingPositionAtom, { x: left, y: top })
+  
   document.body.appendChild(floatingUIContainer)
   
   floatingUIRoot = ReactDOM.createRoot(floatingUIContainer)
   floatingUIRoot.render(
     <React.StrictMode>
-      <FloatingUI
-        selectedText={selection.text}
-        onClose={removeFloatingUI}
-        onExecutePlugin={handlePluginExecution}
-        activeElement={currentActiveElement}
-      />
+      <Provider store={store}>
+        <FloatingUI
+          selectedText={selection.text}
+          onClose={removeFloatingUI}
+          onExecutePlugin={handlePluginExecution}
+          activeElement={currentActiveElement}
+        />
+      </Provider>
     </React.StrictMode>
   )
-  
-  // 렌더링 후 크기를 기반으로 위치 조정
-  setTimeout(() => {
-    if (!floatingUIContainer) return
-    
-    const rect = floatingUIContainer.getBoundingClientRect()
-    const viewportWidth = window.innerWidth
-    const viewportHeight = window.innerHeight
-    
-    // 화면 오른쪽을 벗어나는 경우
-    if (left + rect.width > viewportWidth - 10) {
-      left = viewportWidth - rect.width - 10
-    }
-    
-    // 화면 아래를 벗어나는 경우
-    if (top + rect.height > viewportHeight - 10) {
-      top = viewportHeight - rect.height - 10
-    }
-    
-    // 화면 왼쪽을 벗어나는 경우
-    if (left < 10) {
-      left = 10
-    }
-    
-    // 화면 위를 벗어나는 경우
-    if (top < 10) {
-      top = 10
-    }
-    
-    floatingUIContainer.style.left = `${left}px`
-    floatingUIContainer.style.top = `${top}px`
-    floatingUIContainer.style.visibility = 'visible'
-  }, 0)
 }
 
 function removeFloatingUI() {

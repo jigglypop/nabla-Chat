@@ -1,10 +1,13 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
+import { useAtom } from 'jotai';
 import styles from './FloatingUI.module.css';
 import { getOpenAIChatCompletion } from '../../services/openai';
 import type { Message } from '../ChatApp/types';
 import type { FeaturePlugin } from '../../types/features';
 import { BackgroundSelector } from '../../components/BGSelector';
 import { backgrounds } from '../../components/BGSelector/constants';
+import { floatingPositionAtom, floatingBackgroundAtom } from '../../atoms/chatAtoms';
+import { useResize } from '../../hooks/useResize';
 
 interface FloatingUIProps {
   selectedText: string;
@@ -21,18 +24,28 @@ const FloatingUI: React.FC<FloatingUIProps> = ({ selectedText, onClose, onExecut
   const [activePlugin, setActivePlugin] = useState<string | null>(null);
   const [isCtrlPressed, setIsCtrlPressed] = useState(false);
   const [plugins, setPlugins] = useState<FeaturePlugin[]>([]);
-  const [background, setBackground] = useState(() => {
-    return localStorage.getItem('lovebug-floating-background') || 'gradient1';
-  });
+  const [position, setPosition] = useAtom(floatingPositionAtom);
+  const [background, setBackground] = useAtom(floatingBackgroundAtom);
+  
   const containerRef = useRef<HTMLDivElement>(null);
+  const headerRef = useRef<HTMLDivElement>(null);
+  
+  // 드래그 기능을 위한 useResize 훅 사용
+  const { handleMouseDown, containerRef: resizeContainerRef } = useResize(true); // isFloating = true
+
+  // containerRef 연결
+  useEffect(() => {
+    if (containerRef.current && resizeContainerRef) {
+      resizeContainerRef.current = containerRef.current;
+    }
+  }, [resizeContainerRef]);
 
   const truncatedText = selectedText.length > 100 ? `${selectedText.substring(0, 100)}...` : selectedText;
 
   const currentBg = backgrounds.find(bg => bg.id === background) || backgrounds[0];
-  const isDarkTheme = ['gradient4', 'gradient5', 'gradient6'].includes(background);
+  const isDarkTheme = ['gradient6'].includes(background); // 검정색만 다크 테마로 처리
 
   useEffect(() => {
-    // 플러그인 목록 가져오기
     const loadPlugins = () => {
       chrome.runtime.sendMessage({ type: 'GET_ALL_PLUGINS' }, (response) => {
         if (!chrome.runtime.lastError && response) {
@@ -58,10 +71,6 @@ const FloatingUI: React.FC<FloatingUIProps> = ({ selectedText, onClose, onExecut
       chrome.storage.onChanged.removeListener(handleStorageChange);
     };
   }, []);
-
-  useEffect(() => {
-    localStorage.setItem('lovebug-floating-background', background);
-  }, [background]);
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -178,11 +187,14 @@ const FloatingUI: React.FC<FloatingUIProps> = ({ selectedText, onClose, onExecut
         className={styles.compactContainer}
         style={{ 
           '--chat-bg': currentBg.value,
+          position: 'fixed',
+          left: `${position.x}px`,
+          top: `${position.y}px`,
         } as React.CSSProperties}
         data-theme={isDarkTheme ? 'dark' : 'light'}
       >
         <button className={styles.compactButton} onClick={toggleExpanded} title="AI Assistant (Ctrl 키로도 열기)">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill={isDarkTheme ? 'white' : '#1a1a1a'}>
             <path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm-7 12h-2v-2h2v2zm0-4h-2V6h2v4z"/>
           </svg>
         </button>
@@ -198,10 +210,18 @@ const FloatingUI: React.FC<FloatingUIProps> = ({ selectedText, onClose, onExecut
       className={styles.floatingContainer}
       style={{ 
         '--chat-bg': currentBg.value,
+        position: 'fixed',
+        left: `${position.x}px`,
+        top: `${position.y}px`,
       } as React.CSSProperties}
       data-theme={isDarkTheme ? 'dark' : 'light'}
     >
-      <div className={styles.floatingHeader}>
+      <div 
+        ref={headerRef}
+        className={styles.floatingHeader}
+        onMouseDown={handleMouseDown}
+        style={{ cursor: 'move' }}
+      >
         <span className={styles.floatingTitle}>AI Assistant</span>
         <div className={styles.headerActions}>
           <div className={styles.bgSelectorWrapper}>

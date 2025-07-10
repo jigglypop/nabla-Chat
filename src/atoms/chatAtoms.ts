@@ -31,4 +31,15 @@ export const chatSizeAtom = atomWithStorage<{ width: number; height: number }>(
   }
 );
 
-export const backgroundAtom = atomWithStorage<string>('lovebug-background', 'gradient1'); 
+export const backgroundAtom = atomWithStorage<string>('lovebug-background', 'gradient6'); 
+
+// FloatingUI용 atom들
+export const floatingPositionAtom = atomWithStorage<{ x: number; y: number }>(
+  'lovebug-floating-position',
+  {
+    x: 100,
+    y: 100,
+  }
+);
+
+export const floatingBackgroundAtom = atomWithStorage<string>('lovebug-floating-background', 'gradient6'); 
