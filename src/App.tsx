@@ -36,7 +36,6 @@ function App() {
         setShowFloating(false)
       }
     }
-
     document.addEventListener('mouseup', handleMouseUp)
     document.addEventListener('mousedown', handleMouseDown)
     return () => {
@@ -47,7 +46,7 @@ function App() {
 
   return (
     <div className={styles.testContainer}>
-      <h1 className={styles.testTitle}>LOVEBUG SETTINGS</h1>
+      <h1 className={styles.testTitle}>LOVEBUG</h1>
       {/* Extension Popup */}
       {showPopup && (
         <div className={styles.extensionPopup}>
@@ -77,7 +76,6 @@ function App() {
           </div>
         </div>
       </div>
-
       {/* Floating UI */}
       {showFloating && (
         <div 
@@ -95,7 +93,6 @@ function App() {
           />
         </div>
       )}
-
       {/* Chat App */}
       {showChat && (
         <ChatApp onClose={() => setShowChat(false)} />
