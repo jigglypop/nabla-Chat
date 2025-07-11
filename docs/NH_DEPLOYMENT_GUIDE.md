@@ -1,4 +1,4 @@
-# 농협은행 Lovebug AI Assistant 사내 배포 가이드
+# 농협은행 ∇ AI Assistant 사내 배포 가이드
 
 ## 목차
 1. [개요](#개요)
@@ -10,7 +10,7 @@
 
 ## 개요
 
-Lovebug AI Assistant는 농협은행 직원들의 업무 효율성을 극대화하기 위해 개발된 브라우저 확장 프로그램입니다. 농협은행의 엄격한 보안 정책과 IT 인프라를 고려하여 설계되었습니다.
+∇ AI Assistant는 농협은행 직원들의 업무 효율성을 극대화하기 위해 개발된 브라우저 확장 프로그램입니다. 농협은행의 엄격한 보안 정책과 IT 인프라를 고려하여 설계되었습니다.
 
 ### 주요 특징
 - **농협 사내망 전용**: `*.nonghyup.com`, `*.nhbank.com` 도메인에서만 작동
@@ -141,7 +141,7 @@ signtool sign /f "NH-Code-Certificate.pfx" /p $CERT_PASSWORD dist/lovebug-nh.crx
 
 #### B. 자가 설치 (파일럿 테스트)
 1. 내부 포털 접속: https://portal.nonghyup.com/it/tools
-2. "AI 도구" → "Lovebug 설치"
+2. "AI 도구" → "∇ 설치"
 3. 설치 가이드 따라 진행
 
 ### 4. 검증 프로세스

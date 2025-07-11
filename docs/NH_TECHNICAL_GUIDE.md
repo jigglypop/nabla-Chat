@@ -1,4 +1,4 @@
-# 농협은행 Lovebug AI Assistant 기술 가이드
+# 농협은행 ∇ AI Assistant 기술 가이드
 
 ## 목차
 1. [시스템 아키텍처](#시스템-아키텍처)
@@ -643,14 +643,3 @@ awk '{print $5}' error.log | sort | uniq -c | sort -nr
 # 성능 저하 구간 찾기
 awk '$4 > 1000 {print $0}' performance.log
 ```
-
-## 문의 및 지원
-
-### 기술 지원
-- **개발팀**: lovebug-dev@nonghyup.com
-- **Confluence**: https://wiki.nonghyup.com/display/LOVEBUG
-- **JIRA**: https://jira.nonghyup.com/projects/LVBG
-
-### 긴급 지원
-- **장애 대응**: 02-2080-5555 (24시간)
-- **보안 사고**: 02-2080-5114 

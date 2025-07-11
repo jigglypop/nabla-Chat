@@ -1,7 +1,7 @@
-# Lovebug AI Assistant - 은행 사내 배포 가이드
+# ∇ AI Assistant - 은행 사내 배포 가이드
 
 ## 개요
-본 문서는 Lovebug AI Assistant를 은행 사내 환경에 안전하게 배포하기 위한 종합 가이드입니다.
+본 문서는 ∇ AI Assistant를 은행 사내 환경에 안전하게 배포하기 위한 종합 가이드입니다.
 
 ## 목차
 1. [보안 검토 사항](#보안-검토-사항)
