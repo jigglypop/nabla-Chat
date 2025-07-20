@@ -30,8 +30,5 @@ export const hasCheckedConnectionAtom = atom<boolean>(false);
 // 사용자 프로필 atom
 export const userProfileAtom = atomWithStorage<string | null>('userProfile', null);
 
-// FloatingUI용 atom들
-export const floatingPositionAtom = atom({ x: 0, y: 0 });
-export const floatingBackgroundAtom = atom<string>('glass1');
-export const chatOpenAtom = atom<boolean>(false);
-export const isDraggingFloatingUIAtom = atom<boolean>(false); 
+// 채팅 열림 상태
+export const chatOpenAtom = atom<boolean>(false); 

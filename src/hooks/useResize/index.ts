@@ -1,10 +1,10 @@
 import { useState, useRef, useCallback, useEffect } from 'react';
 import { useAtom } from 'jotai';
-import { chatSizeAtom, chatPositionAtom, floatingPositionAtom } from '../../atoms/chatAtoms';
+import { chatSizeAtom, chatPositionAtom } from '../../atoms/chatAtoms';
 
-const useResize = (isFloating: boolean = false) => {
+const useResize = () => {
   const [chatSize, setChatSize] = useAtom(chatSizeAtom);
-  const [chatPosition, setChatPosition] = useAtom(isFloating ? floatingPositionAtom : chatPositionAtom);
+  const [chatPosition, setChatPosition] = useAtom(chatPositionAtom);
 
   const [isResizing, setIsResizing] = useState<string | false>(false);
   const [isDragging, setIsDragging] = useState(false);
@@ -15,7 +15,7 @@ const useResize = (isFloating: boolean = false) => {
     if (!isDragging && !isResizing) return;
 
     const handleMouseMove = (e: MouseEvent) => {
-      if (isResizing && !isFloating) {
+      if (isResizing) {
         const containerRect = containerRef.current?.getBoundingClientRect();
         if (!containerRect) return;
         let newWidth = chatSize.width;
@@ -56,18 +56,10 @@ const useResize = (isFloating: boolean = false) => {
         const newX = e.clientX - dragStart.x;
         const newY = e.clientY - dragStart.y;
         
-        if (isFloating) {
-          // FloatingUI는 크기가 고정이므로 viewport 경계만 체크
-          setChatPosition({
-            x: Math.max(0, Math.min(window.innerWidth - 300, newX)), // FloatingUI 너비 약 300px
-            y: Math.max(0, Math.min(window.innerHeight - 400, newY)), // FloatingUI 높이 약 400px
-          });
-        } else {
-          setChatPosition({
-            x: Math.max(0, Math.min(window.innerWidth - chatSize.width, newX)),
-            y: Math.max(0, Math.min(window.innerHeight - chatSize.height, newY)),
-          });
-        }
+        setChatPosition({
+          x: Math.max(0, Math.min(window.innerWidth - chatSize.width, newX)),
+          y: Math.max(0, Math.min(window.innerHeight - chatSize.height, newY)),
+        });
       }
     };
 
@@ -83,7 +75,7 @@ const useResize = (isFloating: boolean = false) => {
       window.removeEventListener('mousemove', handleMouseMove);
       window.removeEventListener('mouseup', handleMouseUp);
     };
-  }, [isDragging, isResizing, dragStart, chatSize, chatPosition, setChatSize, setChatPosition, isFloating]);
+  }, [isDragging, isResizing, dragStart, chatSize, chatPosition, setChatSize, setChatPosition]);
 
   const onMouseMove = useCallback((e: MouseEvent) => {
     // 이제 useEffect 내부에서 처리
@@ -95,13 +87,11 @@ const useResize = (isFloating: boolean = false) => {
   }, []);
 
   const onResize = useCallback(() => {
-    if (!isFloating) {
-      setChatPosition(prev => ({
-        x: Math.max(0, Math.min(window.innerWidth - chatSize.width, prev.x)),
-        y: Math.max(0, Math.min(window.innerHeight - chatSize.height, prev.y)),
-      }));
-    }
-  }, [chatSize.width, chatSize.height, setChatPosition, isFloating]);
+    setChatPosition(prev => ({
+      x: Math.max(0, Math.min(window.innerWidth - chatSize.width, prev.x)),
+      y: Math.max(0, Math.min(window.innerHeight - chatSize.height, prev.y)),
+    }));
+  }, [chatSize.width, chatSize.height, setChatPosition]);
 
   const handleMouseDown = useCallback((e: React.MouseEvent) => {
     e.preventDefault();

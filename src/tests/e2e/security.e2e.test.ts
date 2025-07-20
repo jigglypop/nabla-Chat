@@ -82,9 +82,9 @@ describe.skip('보안 E2E 테스트', () => {
       // mouseup 이벤트 트리거
       await page.mouse.click(100, 100)
       
-      // 플로팅 UI 확인
-      const floatingUI = await page.locator('#lovebug-floating-ui')
-      await expect(floatingUI).toBeVisible()
+      // 채팅 버튼 확인
+      const chatButton = await page.locator('#nabla-chat-button')
+      await expect(chatButton).toBeVisible()
       
       // 악성 스크립트가 실행되지 않았는지 확인
       const alerts = await page.evaluate(() => {

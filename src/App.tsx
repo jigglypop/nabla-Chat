@@ -18,18 +18,18 @@ function App() {
     <div className="App">
       <header className="App-header">
         <h1>∇·Chat 플러그인 테스트</h1>
-        <p className="dev-note">개발 모드: 텍스트를 선택하면 플로팅 UI가 나타납니다.</p>
+        <p className="dev-note">개발 모드: 우하단 채팅 버튼을 클릭하여 AI 채팅을 시작할 수 있습니다.</p>
       </header>
       <main className="App-main">
         <div className="test-section">
-          <h2>테스트 텍스트</h2>
+          <h2>테스트 영역</h2>
           <p className="test-text">
-            이 텍스트를 드래그하여 선택하면 플로팅 UI가 나타납니다. 
-            플로팅 UI에서는 요약, 번역, 설명, 다시쓰기 기능을 테스트할 수 있습니다.
+            이 페이지는 ∇·Chat Chrome 확장 프로그램의 개발 모드입니다. 
+            우하단의 채팅 버튼을 클릭하여 AI 어시스턴트와 대화할 수 있습니다.
           </p>
           <p className="test-text">
-            ∇·Chat is an AI-powered Chrome extension that helps you process text with various AI features. 
-            Select this text to see the floating UI in action.
+            ∇·Chat is an AI-powered Chrome extension for chatting with AI assistants. 
+            Click the chat button in the bottom right corner to start a conversation.
           </p>
         </div>
         
@@ -38,8 +38,8 @@ function App() {
           <input
             id="test-input"
             type="text"
-            placeholder="Select text here to see the AI assistant."
-            defaultValue="This is some sample text in an input field. Try rewriting this."
+            placeholder="Chat button will appear in the bottom right corner."
+            defaultValue="You can start chatting with AI by clicking the chat button."
           />
         </div>
         
@@ -48,18 +48,18 @@ function App() {
           <textarea
             id="test-textarea"
             rows={8}
-            placeholder="Select text here to see the AI assistant."
-            defaultValue="This is a sample paragraph inside a textarea. You can select this text to summarize, translate, or explain it using the floating ∇·Chat assistant. The goal is to make sure the extension can correctly identify selected text within form elements and provide contextual actions."
+            placeholder="Chat button will appear in the bottom right corner."
+            defaultValue="This is a sample text area. The ∇·Chat extension provides an AI chat interface that you can access via the floating chat button. You can discuss any topic with the AI assistant."
           />
         </div>
 
         <div className="info-section">
           <h3>사용 방법</h3>
           <ul>
-            <li>텍스트를 드래그하여 선택하면 플로팅 UI가 나타납니다</li>
-            <li>Ctrl 키를 누르면 플로팅 UI가 확장됩니다</li>
-            <li>설정에서 비활성화한 플러그인은 플로팅 UI에 표시되지 않습니다</li>
-            <li>각 플러그인의 프롬프트는 설정에서 커스터마이징할 수 있습니다</li>
+            <li>우하단의 채팅 버튼을 클릭하면 AI 채팅 인터페이스가 열립니다</li>
+            <li>채팅창은 드래그하여 이동하고 크기를 조절할 수 있습니다</li>
+            <li>Ctrl+Shift+S 키로 채팅창을 토글할 수 있습니다</li>
+            <li>설정에서 API 키와 배경 테마를 변경할 수 있습니다</li>
           </ul>
         </div>
       </main>
