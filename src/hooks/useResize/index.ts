@@ -11,6 +11,8 @@ const useResize = () => {
   const [dragStart, setDragStart] = useState({ x: 0, y: 0 });
   const containerRef = useRef<HTMLDivElement>(null);
 
+  const animationFrameRef = useRef<number | null>(null);
+
   useEffect(() => {
     if (!isDragging && !isResizing) return;
 
@@ -52,13 +54,17 @@ const useResize = () => {
         setChatSize({ width: finalWidth, height: finalHeight });
         setChatPosition({ x: finalX, y: finalY });
       } else if (isDragging) {
-        // 현재 마우스 위치에서 드래그 시작점을 뺀 값이 새로운 위치
-        const newX = e.clientX - dragStart.x;
-        const newY = e.clientY - dragStart.y;
-        
-        setChatPosition({
-          x: Math.max(0, Math.min(window.innerWidth - chatSize.width, newX)),
-          y: Math.max(0, Math.min(window.innerHeight - chatSize.height, newY)),
+        if (animationFrameRef.current) {
+          cancelAnimationFrame(animationFrameRef.current);
+        }
+        animationFrameRef.current = requestAnimationFrame(() => {
+          const newX = e.clientX - dragStart.x;
+          const newY = e.clientY - dragStart.y;
+          
+          setChatPosition({
+            x: Math.max(0, Math.min(window.innerWidth - chatSize.width, newX)),
+            y: Math.max(0, Math.min(window.innerHeight - chatSize.height, newY)),
+          });
         });
       }
     };
@@ -66,6 +72,9 @@ const useResize = () => {
     const handleMouseUp = () => {
       setIsResizing(false);
       setIsDragging(false);
+      if (animationFrameRef.current) {
+        cancelAnimationFrame(animationFrameRef.current);
+      }
     };
 
     window.addEventListener('mousemove', handleMouseMove);

@@ -5,9 +5,7 @@
 .trafficLights {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
-  grid-template-rows: repeat(2, 1fr);
   gap: 6px;
-  align-items: center;
 }
 .trafficLight {
   width: 14px;

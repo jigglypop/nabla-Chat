@@ -29,7 +29,7 @@
 .container {
   position: fixed;
   background: var(--chat-bg, linear-gradient(135deg, rgba(255, 94, 98, 0.3), rgba(255, 154, 0, 0.3), rgba(237, 117, 255, 0.3)));
-  transition: height .2s ease-in-out, opacity .2s ease-in-out, background .2s ease-in-out;
+  transition: all .2s ease-in-out;
   font-family: 'Pretendard';
   backdrop-filter: blur(24px);
   border-radius: 12px;
@@ -66,6 +66,26 @@
   --user-bubble-bg: rgba(255, 255, 255, 0.95);
   --user-text-color: rgba(30, 30, 30, 0.9);
   --user-border-color: rgba(200, 200, 210, 0.8);
+}
+
+.container[data-background="gradient2"] { /* Aurora Night - 파란색 계열 */
+  --assistant-bubble-bg: rgba(20, 30, 50, 0.85);
+  --assistant-text-color: rgba(255, 255, 255, 0.95);
+  --assistant-border-color: rgba(0, 210, 255, 0.4);
+  --timestamp-color: rgba(150, 200, 255, 0.8);
+  --user-bubble-bg: rgba(255, 255, 255, 0.9);
+  --user-text-color: rgba(20, 30, 50, 0.9);
+  --user-border-color: rgba(0, 210, 255, 0.3);
+}
+
+.container[data-background="gradient3"] { /* Forest Dream - 초록색 계열 */
+  --assistant-bubble-bg: rgba(20, 40, 30, 0.85);
+  --assistant-text-color: rgba(255, 255, 255, 0.95);
+  --assistant-border-color: rgba(0, 255, 135, 0.4);
+  --timestamp-color: rgba(150, 255, 200, 0.8);
+  --user-bubble-bg: rgba(255, 255, 255, 0.9);
+  --user-text-color: rgba(20, 40, 30, 0.9);
+  --user-border-color: rgba(0, 255, 135, 0.3);
 }
 
 .container[data-background="gradient4"],
@@ -279,6 +299,30 @@
 
 .container[data-background="gradient6"] .messagesContainer::-webkit-scrollbar-track {
   background: rgba(255, 255, 255, 0.05);
+}
+
+.container[data-background="gradient6"] .messagesContainer::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.15);
+}
+
+.container[data-background="gradient6"] .messagesContainer::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.25);
+}
+
+.container[data-background="gradient2"] .messagesContainer::-webkit-scrollbar-thumb {
+  background: rgba(0, 210, 255, 0.3);
+}
+
+.container[data-background="gradient2"] .messagesContainer::-webkit-scrollbar-thumb:hover {
+  background: rgba(0, 210, 255, 0.5);
+}
+
+.container[data-background="gradient3"] .messagesContainer::-webkit-scrollbar-thumb {
+  background: rgba(0, 255, 135, 0.3);
+}
+
+.container[data-background="gradient3"] .messagesContainer::-webkit-scrollbar-thumb:hover {
+  background: rgba(0, 255, 135, 0.5);
 }
 .messageWrapper {
   display: flex;
@@ -607,4 +651,3 @@
   border-radius: 50%;
   display: block;
 } 
-

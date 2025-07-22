@@ -1,11 +1,11 @@
 import React, { useState, useEffect, useRef } from 'react'
-import styles from './ChatApp.module.css'
-import type { ChatAppProps, Message } from './types'
+import styles from './Message.module.css'
+import type { Message as MessageType, MessageProps } from './types' // Renamed to avoid conflict
 import { BackgroundSelector } from '../../../components/BGSelector'
 import { backgrounds } from '../../../components/BGSelector/constants'
 import useResize from '..'
 
-const ChatApp: React.FC<ChatAppProps> = ({ onClose }) => {
+const Message: React.FC<MessageProps> = ({ onClose }) => { // Renamed component and props
   const {
     onMouseMove,
     onMouseUp,
@@ -22,7 +22,7 @@ const ChatApp: React.FC<ChatAppProps> = ({ onClose }) => {
     containerRef,
     setDragStart
   } = useResize()
-  const [messages, setMessages] = useState<Message[]>([
+  const [messages, setMessages] = useState<MessageType[]>([ // Use renamed type
     {
       id: '1',
       role: 'assistant',
@@ -104,7 +104,7 @@ const ChatApp: React.FC<ChatAppProps> = ({ onClose }) => {
 
   const handleSend = async () => {
     if (!input.trim() || isLoading) return
-    const userMessage: Message = {
+    const userMessage: MessageType = {
       id: Date.now().toString(),
       role: 'user',
       content: input.trim(),
@@ -114,7 +114,7 @@ const ChatApp: React.FC<ChatAppProps> = ({ onClose }) => {
     setInput('')
     setIsLoading(true)
     setTimeout(() => {
-      const aiMessage: Message = {
+      const aiMessage: MessageType = {
         id: (Date.now() + 1).toString(),
         role: 'assistant',
         content: '목업용 대화입니다!',
@@ -294,4 +294,4 @@ const ChatApp: React.FC<ChatAppProps> = ({ onClose }) => {
   )
 }
 
-export default ChatApp 
+export default Message;

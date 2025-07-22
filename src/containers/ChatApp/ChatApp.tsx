@@ -21,14 +21,11 @@ import {
 
 const ChatApp: React.FC<ChatAppProps> = ({ onClose }) => {
   const {
-    onMouseMove,
-    onMouseUp,
     onResize,
     isDragging,
     setIsDragging,
     isResizing,
     setIsResizing,
-    dragStart,
     containerRef,
     setDragStart
   } = useResize();
@@ -98,18 +95,14 @@ const ChatApp: React.FC<ChatAppProps> = ({ onClose }) => {
 
   useEffect(() => {
     if (isResizing || isDragging) {
-      document.addEventListener('mousemove', onMouseMove);
-      document.addEventListener('mouseup', onMouseUp);
       document.body.style.cursor = isResizing ? isResizing + '-resize' : 'move';
       document.body.style.userSelect = 'none';
     }
     return () => {
-      document.removeEventListener('mousemove', onMouseMove);
-      document.removeEventListener('mouseup', onMouseUp);
       document.body.style.cursor = '';
       document.body.style.userSelect = '';
     };
-  }, [isResizing, isDragging, onMouseMove, onMouseUp]);
+  }, [isResizing, isDragging]);
 
   useEffect(() => {
     window.addEventListener('resize', onResize);
@@ -140,8 +133,6 @@ const ChatApp: React.FC<ChatAppProps> = ({ onClose }) => {
       <div className={`${styles.resizeHandle} ${styles.resizeBottomRight}`} onMouseDown={() => setIsResizing('bottom-right')} />
       
       <ChatHeader
-        background={background}
-        setBackground={setBackground}
         isConnected={isConnected}
         onSettingsClick={() => setIsSettingsOpen(true)}
         isMinimized={isMinimized}
