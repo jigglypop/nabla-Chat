@@ -1,22 +1,21 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
 import { useAtom } from 'jotai';
 import styles from './ChatApp.module.css';
 import type { ChatAppProps } from './types';
 import { ChatHeader } from '../../components/ChatHeader';
 import { MessageList } from '../../components/MessageList';
 import { ChatInput } from '../../components/ChatInput';
-import { backgrounds } from '../../components/BGSelector/constants';
 import useResize from '../../hooks/useResize';
 import { useAIChat } from '../../hooks/useAIChat';
 import {
   messagesAtom,
   inputAtom,
   isMinimizedAtom,
-  backgroundAtom,
   chatPositionAtom,
   chatSizeAtom,
   userProfileAtom
 } from '../../atoms/chatAtoms';
+import { backgrounds } from './contants';
 
 const ChatApp: React.FC<ChatAppProps> = ({ onClose }) => {
   const {

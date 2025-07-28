@@ -96,6 +96,11 @@
   color: #f0f0f0; /* 밝은 텍스트 색상 */
 }
 
+.modalFooter {
+  display: flex;
+  align-items: center;
+}
+
 .closeButton {
   width: 32px;
   height: 32px;

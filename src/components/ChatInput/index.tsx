@@ -1,4 +1,4 @@
-import { useRef, type FC } from 'react';
+import { useRef, type FC, type KeyboardEventHandler } from 'react';
 import styles from './ChatInput.module.css';
 import type { ChatInputProps } from './types';
 
@@ -10,9 +10,8 @@ export const ChatInput: FC<ChatInputProps> = ({
   disabled = false,
   placeholder = "메시지를 입력하세요"
 }) => {
-  const textareaRef = useRef<HTMLTextAreaElement>(null);
 
-  const handleKeyPress = (e: KeyboardEvent) => {
+  const handleKeyPress: KeyboardEventHandler = (e) => {
     if (e.key === 'Enter' && !e.shiftKey) {
       e.preventDefault();
       onSend();
@@ -22,7 +21,6 @@ export const ChatInput: FC<ChatInputProps> = ({
   return (
     <div className={styles.inputContainer}>
       <textarea
-        ref={textareaRef}
         value={value}
         onChange={(e) => onChange(e.target.value)}
         onKeyDown={handleKeyPress}

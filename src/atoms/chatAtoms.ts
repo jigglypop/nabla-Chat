@@ -12,23 +12,19 @@ export const messagesAtom = atom<Message[]>([
 ]);
 export const inputAtom = atom<string>('');
 export const isMinimizedAtom = atom<boolean>(false);
-export const backgroundAtom = atomWithStorage<string>('chatBackground','glass1');
-
-// 파생: 읽지 않은 메시지(assistant) 카운트
-export const unreadCountAtom = atom((get) => {
-  const msgs = get(messagesAtom);
-  return msgs.filter((m) => m.role === 'assistant' && !m.read).length;
-});
 export const chatPositionAtom = atomWithStorage('chatPosition', { x: 20, y: 20 });
 export const chatSizeAtom = atomWithStorage('chatSize', { width: 400, height: 600 });
-
 // 연결 상태 atom - null은 체크 중
 export const isConnectedAtom = atom<boolean | null>(null);
 // 연결 체크 완료 여부
 export const hasCheckedConnectionAtom = atom<boolean>(false);
-
 // 사용자 프로필 atom
 export const userProfileAtom = atomWithStorage<string | null>('userProfile', null);
-
+export const settingsAtom = atomWithStorage('settings', {
+  modelType: 'openai',
+  endpoint: 'https://api.openai.com/v1/chat/completions',
+  userProfile: "",
+  apiKey: ''
+});
 // 채팅 열림 상태
 export const chatOpenAtom = atom<boolean>(false); 

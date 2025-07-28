@@ -105,6 +105,11 @@ body {
   transform: scale(1);
 }
 
+.chatButton.box {
+  border-radius: 10px;
+  height: 3rem;
+}
+
 .closeIcon {
   width: 24px;
   height: 24px;
