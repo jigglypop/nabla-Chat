@@ -1,4 +1,4 @@
-export interface Message {
+export interface CommandMessage {
   type: 'COMMAND'
   payload?: {
     command?: string

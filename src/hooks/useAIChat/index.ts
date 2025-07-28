@@ -1,7 +1,8 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { streamOpenAIChatCompletion, checkAPIConnection } from '../../services/openai';
-import type { Message } from '../../containers/ChatApp/types';
+import type { Message } from '../../types/message';
 import { messagesAtom, isConnectedAtom, hasCheckedConnectionAtom } from '../../atoms/chatAtoms';
+import { useSettings } from '../useSettings';
 import { useAtom } from 'jotai';
 import { useEffect } from 'react';
 
@@ -10,6 +11,7 @@ export const useAIChat = () => {
   const [messages, setMessages] = useAtom(messagesAtom);
   const [isConnected, setIsConnected] = useAtom(isConnectedAtom);
   const [hasCheckedConnection, setHasCheckedConnection] = useAtom(hasCheckedConnectionAtom);
+  const { getAPISettings } = useSettings();
   
   // 연결 상태 확인
   useEffect(() => {
@@ -26,7 +28,7 @@ export const useAIChat = () => {
         }
         
         // 실제 API 연결 테스트
-        const isConnected = await checkAPIConnection();
+        const isConnected = await checkAPIConnection(getAPISettings());
         setIsConnected(isConnected);
         setHasCheckedConnection(true);
       } catch (error) {
@@ -48,7 +50,7 @@ export const useAIChat = () => {
       if (changes.apiSettings) {
         // API 설정이 변경되면 연결 상태를 다시 확인
         setIsConnected(null); // 확인 중 상태로 변경
-        const isConnected = await checkAPIConnection();
+        const isConnected = await checkAPIConnection(getAPISettings());
         setIsConnected(isConnected);
       }
     };
@@ -63,7 +65,7 @@ export const useAIChat = () => {
   useEffect(() => {
     const interval = setInterval(async () => {
       if (hasCheckedConnection) {
-        const isConnected = await checkAPIConnection();
+        const isConnected = await checkAPIConnection(getAPISettings());
         setIsConnected(isConnected);
       }
     }, 30000); // 30초
@@ -79,6 +81,7 @@ export const useAIChat = () => {
       return new Promise<void>((resolve, reject) => {
         streamOpenAIChatCompletion(
           newMessages,
+          getAPISettings(),
           (chunk) => {
             // 첫 번째 청크를 받을 때만 메시지 추가
             if (!messageAdded) {

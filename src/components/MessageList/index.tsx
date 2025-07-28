@@ -5,7 +5,7 @@ import type { MessageListProps } from './types';
 
 export const MessageList: FC<MessageListProps> = ({ messages, isLoading, userProfile }) => {
   const messagesEndRef = useRef<HTMLDivElement>(null);
-
+  
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   };

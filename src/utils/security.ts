@@ -72,7 +72,7 @@ export function generateNonce(): string {
  * @param secret - 비밀 키
  * @returns HMAC 서명
  */
-export function generateRequestSignature(data: any, secret: string): string {
+export function generateRequestSignature(data: Record<string, unknown>, secret: string): string {
   const message = JSON.stringify(data)
   return crypto.HmacSHA256(message, secret).toString()
 }
@@ -110,7 +110,7 @@ export function validateSessionToken(token: string): boolean {
  * @param fields - 마스킹할 필드 목록
  * @returns 마스킹된 데이터
  */
-export function maskSensitiveData(data: any, fields: string[]): any {
+export function maskSensitiveData(data: Record<string, unknown>, fields: string[]): Record<string, unknown> {
   const masked = { ...data }
   
   fields.forEach(field => {
@@ -137,7 +137,7 @@ export function maskSensitiveData(data: any, fields: string[]): any {
  * @param message - 로그 메시지
  * @param data - 추가 데이터
  */
-export function secureLog(level: 'info' | 'warn' | 'error', message: string, data?: any) {
+export function secureLog(level: 'info' | 'warn' | 'error', message: string, data?: Record<string, unknown>) {
   const sanitizedData = data ? maskSensitiveData(data, ['apiKey', 'password', 'token', 'sessionId']) : undefined
   
   const logEntry = {

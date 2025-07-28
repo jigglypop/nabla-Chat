@@ -1,13 +1,6 @@
 
 import { decryptApiKey, generateRequestSignature, secureLog, sanitizeInput } from './security'
-
-interface SSEOptions {
-  systemPrompt?: string
-  temperature?: number
-  maxTokens?: number
-  userId?: string
-  sessionId?: string
-}
+import type { SSEOptions } from './types'
 
 interface SecurityConfig {
   encryptedApiKey: string
@@ -62,7 +55,7 @@ class SecureSSEClient {
    * @param data - 요청 데이터
    * @returns 보안 헤더
    */
-  private createSecureHeaders(data: any): HeadersInit {
+  private createSecureHeaders(data: Record<string, unknown>): HeadersInit {
     if (!this.config) throw new Error('Configuration not set')
     
     const timestamp = Date.now()

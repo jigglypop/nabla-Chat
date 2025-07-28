@@ -1,5 +1,4 @@
-import type { Message } from './types'
-import { sseClient } from './utils/sse'
+import type { CommandMessage } from './types'
 
 chrome.runtime.onInstalled.addListener(() => {
   console.log('Nabla Chat extension installed or updated.')
@@ -10,18 +9,24 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
   if (request.type === 'SSE_START') {
     return true;
   }
+  
+  // 설정 업데이트 브로드캐스트
+  if (request.type === 'SETTINGS_UPDATED') {
+    chrome.tabs.query({}, (tabs) => {
+      tabs.forEach(tab => {
+        if (tab.id) {
+          chrome.tabs.sendMessage(tab.id, request).catch(() => {});
+        }
+      });
+    });
+    sendResponse({ success: true });
+    return true;
+  }
+  
   return true;
 })
 
-chrome.storage.onChanged.addListener((changes) => {
-  if (changes.apiEndpoint || changes.apiKey) {
-    chrome.storage.sync.get(['apiEndpoint', 'apiKey'], (result) => {
-      if (result.apiEndpoint && result.apiKey) {
-        sseClient.setConfig(result.apiEndpoint, result.apiKey)
-      }
-    })
-  }
-})
+
 
 chrome.commands.onCommand.addListener((command) => {
   chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
@@ -29,7 +34,7 @@ chrome.commands.onCommand.addListener((command) => {
       chrome.tabs.sendMessage(tabs[0].id, {
         type: 'COMMAND',
         payload: { command }
-      } as Message)
+      } as CommandMessage)
     }
   })
 })

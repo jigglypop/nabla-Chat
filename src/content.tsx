@@ -1,6 +1,6 @@
 import React from 'react'
 import ReactDOM from 'react-dom/client'
-import type { Message } from './types'
+import type { CommandMessage } from './types'
 import ChatApp from './containers/ChatApp/ChatApp'
 import styles from './content.module.css'
 import { Provider } from 'jotai'

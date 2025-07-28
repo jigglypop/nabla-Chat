@@ -120,11 +120,18 @@ if (typeof globalThis.crypto !== 'undefined' && 'randomUUID' in globalThis.crypt
   }
 }
 
+declare global {
+  interface Window {
+    CSS: {
+      escape(value: string): string;
+    } & typeof CSS;
+  }
+}
+
 // CSS.escape polyfill for jsdom
 if (!window.CSS || !window.CSS.escape) {
-  // @ts-ignore
   window.CSS = {
     ...(window.CSS || {}),
-    escape: (sel: string) => sel.replace(/[^\w-]/g, '\\$&')
-  }
+    escape: (sel: string) => sel.replace(/[^\w-]/g, '\\$&'),
+  } as any; // jsdom 환경에는 CSS.escape가 없으므로 any로 캐스팅합니다.
 } 

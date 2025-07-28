@@ -7,13 +7,13 @@ import { MessageList } from '../../components/MessageList';
 import { ChatInput } from '../../components/ChatInput';
 import useResize from '../../hooks/useResize';
 import { useAIChat } from '../../hooks/useAIChat';
+import { useSettings } from '../../hooks/useSettings';
 import {
   messagesAtom,
   inputAtom,
   isMinimizedAtom,
   chatPositionAtom,
-  chatSizeAtom,
-  userProfileAtom
+  chatSizeAtom
 } from '../../atoms/chatAtoms';
 import { backgrounds } from './contants';
 
@@ -33,8 +33,10 @@ const ChatApp: React.FC<ChatAppProps> = ({ onClose }) => {
   const [isMinimized, setIsMinimized] = useAtom(isMinimizedAtom);
   const [chatPosition, setChatPosition] = useAtom(chatPositionAtom);
   const [chatSize, setChatSize] = useAtom(chatSizeAtom);
-  const [userProfile] = useAtom(userProfileAtom);
+  const { settings } = useSettings();
   const { sendMessage, isLoading, isConnected } = useAIChat();
+
+
 
   useEffect(() => {
     const handleMessage = (event: MessageEvent) => {
@@ -153,7 +155,7 @@ const ChatApp: React.FC<ChatAppProps> = ({ onClose }) => {
     />
     {!isMinimized && (
      <>
-      <MessageList messages={messages} isLoading={isLoading} userProfile={userProfile} />
+      <MessageList messages={messages} isLoading={isLoading} userProfile={settings.userProfile} />
       <ChatInput value={input} onChange={setInput} onSend={handleSend} disabled={isLoading} />
      </>
     )}
