@@ -59,4 +59,4 @@ export const SettingsModal: FC<SettingsModalProps> = () => {
   );
 };
 
-export default SettingsModal;
+export default SettingsModal; 

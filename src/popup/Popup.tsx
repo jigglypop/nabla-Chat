@@ -1,5 +1,5 @@
 import styles from './Popup.module.css';
-import SettingsModal from '../components/SettingsModal';
+import SettingsModal from '../containers/SettingsModal';
 
 export default function Popup() {
   return (
