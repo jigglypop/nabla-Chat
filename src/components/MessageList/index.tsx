@@ -2,8 +2,7 @@ import { useRef, useEffect, type FC } from 'react';
 import styles from './MessageList.module.css';
 import type { MessageListProps } from './types';
 
-
-export const MessageList: FC<MessageListProps> = ({ messages, isLoading, userProfile }) => {
+export const MessageList: FC<MessageListProps> = ({ messages, isLoading }) => {
   const messagesEndRef = useRef<HTMLDivElement>(null);
   
   const scrollToBottom = () => {
@@ -20,18 +19,10 @@ export const MessageList: FC<MessageListProps> = ({ messages, isLoading, userPro
         <div key={message.id} className={`${styles.messageWrapper} ${message.role === 'user' ? styles.userMessage : styles.assistantMessage}`}>
           <div className={`${styles.avatar} ${message.role === 'user' ? styles.userAvatar : styles.assistantAvatar}`}>
             {message.role === 'user' ? (
-              userProfile ? (
-                <img 
-                  src={userProfile} 
-                  alt="User"
-                  className={styles.userAvatarImage}
-                />
-              ) : (
-                <span>👤</span>
-              )
+              <span>👤</span>
             ) : (
               <img 
-                src={chrome.runtime.getURL('profile/nchat.png')} 
+                src={'profile/nchat.png'} 
                 alt="AI Assistant"
                 className={styles.avatarImage}
               />
@@ -51,16 +42,18 @@ export const MessageList: FC<MessageListProps> = ({ messages, isLoading, userPro
         <div className={`${styles.messageWrapper} ${styles.assistantMessage}`}>
           <div className={`${styles.avatar} ${styles.assistantAvatar}`}>
             <img 
-              src={chrome.runtime.getURL('profile/nchat.png')} 
+              src={'profile/nchat.png'} 
               alt="AI Assistant"
               className={styles.avatarImage}
             />
           </div>
-          <div className={`${styles.messageBubble} ${styles.assistantBubble} ${styles.typingBubble}`}>
-            <div className={styles.typingIndicator}>
-              <span></span>
-              <span></span>
-              <span></span>
+          <div className={styles.messageContent}>
+            <div className={`${styles.messageBubble} ${styles.assistantBubble} ${styles.typingBubble}`}>
+              <div className={styles.typingIndicator}>
+                <span></span>
+                <span></span>
+                <span></span>
+              </div>
             </div>
           </div>
         </div>

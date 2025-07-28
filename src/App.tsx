@@ -1,10 +1,24 @@
 import { useEffect } from 'react';
 import './App.css';
 
+// 전역 플래그로 중복 실행 방지
+declare global {
+  interface Window {
+    __nabla_content_loaded?: boolean;
+  }
+}
+
 function App() {
   useEffect(() => {
-    // 개발 모드에서 content script 시뮬레이션
-    if (process.env.NODE_ENV === 'development') {
+    // 이미 로드되었으면 건너뛰기
+    if (window.__nabla_content_loaded) {
+      console.log('Content script already loaded, skipping');
+      return;
+    }
+
+    // 개발 모드에서만 실행하고, 실제 익스텐션 환경이 아닐 때만 content script 로드
+    if (process.env.NODE_ENV === 'development' && !window.chrome?.runtime) {
+      window.__nabla_content_loaded = true;
       // content.tsx의 주요 로직을 여기서 실행
       import('./content').then(() => {
         console.log('Content script loaded in development mode');

@@ -1,12 +1,6 @@
-export interface Message {
-  id: string;
-  role: 'user' | 'assistant';
-  content: string;
-  timestamp: Date;
-}
+import type { Message } from '../../types/message';
 
 export interface MessageListProps {
   messages: Message[];
   isLoading: boolean;
-  userProfile?: string | null;
 }

@@ -5,6 +5,7 @@ import type { ChatAppProps } from './types';
 import { ChatHeader } from '../../components/ChatHeader';
 import { MessageList } from '../../components/MessageList';
 import { ChatInput } from '../../components/ChatInput';
+import ResizeHandler from '../../components/ResizeHandler';
 import useResize from '../../hooks/useResize';
 import { useAIChat } from '../../hooks/useAIChat';
 import { useSettings } from '../../hooks/useSettings';
@@ -35,8 +36,6 @@ const ChatApp: React.FC<ChatAppProps> = ({ onClose }) => {
   const [chatSize, setChatSize] = useAtom(chatSizeAtom);
   const { settings } = useSettings();
   const { sendMessage, isLoading, isConnected } = useAIChat();
-
-
 
   useEffect(() => {
     const handleMessage = (event: MessageEvent) => {
@@ -117,35 +116,7 @@ const ChatApp: React.FC<ChatAppProps> = ({ onClose }) => {
     }
     data-theme={'dark'}
    >
-    <div
-     className={`${styles.resizeHandle} ${styles.resizeTop}`}
-     onMouseDown={() => setIsResizing('top')}
-    />
-    {/* 우측 리사이즈 핸들 제거 - 스크롤바와 겹침 */}
-    <div
-     className={`${styles.resizeHandle} ${styles.resizeBottom}`}
-     onMouseDown={() => setIsResizing('bottom')}
-    />
-    <div
-     className={`${styles.resizeHandle} ${styles.resizeLeft}`}
-     onMouseDown={() => setIsResizing('left')}
-    />
-    <div
-     className={`${styles.resizeHandle} ${styles.resizeTopLeft}`}
-     onMouseDown={() => setIsResizing('top-left')}
-    />
-    <div
-     className={`${styles.resizeHandle} ${styles.resizeTopRight}`}
-     onMouseDown={() => setIsResizing('top-right')}
-    />
-    <div
-     className={`${styles.resizeHandle} ${styles.resizeBottomLeft}`}
-     onMouseDown={() => setIsResizing('bottom-left')}
-    />
-    <div
-     className={`${styles.resizeHandle} ${styles.resizeBottomRight}`}
-     onMouseDown={() => setIsResizing('bottom-right')}
-    />
+    <ResizeHandler onResizeStart={setIsResizing} />
     <ChatHeader
      isConnected={isConnected}
      isMinimized={isMinimized}
@@ -155,7 +126,7 @@ const ChatApp: React.FC<ChatAppProps> = ({ onClose }) => {
     />
     {!isMinimized && (
      <>
-      <MessageList messages={messages} isLoading={isLoading} userProfile={settings.userProfile} />
+      <MessageList messages={messages} isLoading={isLoading} />
       <ChatInput value={input} onChange={setInput} onSend={handleSend} disabled={isLoading} />
      </>
     )}

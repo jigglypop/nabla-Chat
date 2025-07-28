@@ -13,6 +13,24 @@ const useResize = () => {
 
   const animationFrameRef = useRef<number | null>(null);
 
+  // 위치 변경 시 localStorage에 저장
+  useEffect(() => {
+    try {
+      localStorage.setItem('nabla-chat-position', JSON.stringify(chatPosition));
+    } catch (error) {
+      console.warn('Failed to save position:', error);
+    }
+  }, [chatPosition]);
+
+  // 크기 변경 시 localStorage에 저장
+  useEffect(() => {
+    try {
+      localStorage.setItem('nabla-chat-size', JSON.stringify(chatSize));
+    } catch (error) {
+      console.warn('Failed to save size:', error);
+    }
+  }, [chatSize]);
+
   useEffect(() => {
     if (!isDragging && !isResizing) return;
 

@@ -13,8 +13,23 @@ let chatContainer: HTMLElement | null = null
 let chatButtonContainer: HTMLElement | null = null
 const queryClient = new QueryClient()
 
+// 전역 중복 실행 방지
+declare global {
+  interface Window {
+    __nabla_chat_initialized?: boolean;
+  }
+}
+
 function createChatButton() {
-  if (chatButtonContainer) return
+  // 전역 플래그로 중복 생성 방지
+  if (window.__nabla_chat_initialized || chatButtonContainer) {
+    console.log('Chat button already exists, skipping creation')
+    return
+  }
+  
+  console.log('Creating chat button')
+  window.__nabla_chat_initialized = true
+  
   chatButtonContainer = document.createElement('div')
   chatButtonContainer.id = 'nabla-chat-button'
   // 인라인 스타일로 position fixed 보장
@@ -52,6 +67,7 @@ function createChatButton() {
 }
 
 function toggleChat() {
+  console.log('Toggle chat called, current state:', store.get(chatOpenAtom))
   if (store.get(chatOpenAtom)) {
     closeChatInterface()
   } else {
@@ -60,6 +76,7 @@ function toggleChat() {
 }
 
 function openChatInterface(selectedText?: string) {
+  console.log('Opening chat interface')
   // 기존 채팅 컨테이너가 있으면 제거
   if (chatContainer) {
     closeChatInterface()
@@ -70,13 +87,11 @@ function openChatInterface(selectedText?: string) {
   document.body.appendChild(chatContainer)
   chatRoot = ReactDOM.createRoot(chatContainer)
   chatRoot.render(
-    <React.StrictMode>
-      <QueryClientProvider client={queryClient}>
-        <Provider store={store}>
-          <ChatApp onClose={closeChatInterface} />
-        </Provider>
-      </QueryClientProvider>
-    </React.StrictMode>
+    <QueryClientProvider client={queryClient}>
+      <Provider store={store}>
+        <ChatApp onClose={closeChatInterface} />
+      </Provider>
+    </QueryClientProvider>
   )
   store.set(chatOpenAtom, true)
   updateButtonIcon()
@@ -92,6 +107,7 @@ function openChatInterface(selectedText?: string) {
 }
 
 function closeChatInterface() {
+  console.log('Closing chat interface')
   if (chatRoot) {
     chatRoot.unmount()
     chatRoot = null
@@ -146,8 +162,11 @@ if (chrome.runtime && chrome.runtime.onMessage) {
   });
 }
 
-if (document.readyState === 'loading') {
-  document.addEventListener('DOMContentLoaded', createChatButton)
-} else {
-  createChatButton()
+// 중복 실행 방지 - 전역 플래그 확인
+if (!window.__nabla_chat_initialized) {
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', createChatButton)
+  } else {
+    createChatButton()
+  }
 }

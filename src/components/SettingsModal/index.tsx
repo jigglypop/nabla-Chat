@@ -1,4 +1,4 @@
-import React, { type FC } from 'react';
+import { type FC } from 'react';
 import styles from './SettingsModal.module.css';
 import { useSettings } from '../../hooks/useSettings';
 import type { SettingsModalProps } from './types';
@@ -11,66 +11,12 @@ export const SettingsModal: FC<SettingsModalProps> = () => {
     saveSettings({ [key]: value });
   };
 
-  const handleProfileImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        const base64String = reader.result as string;
-        handleSettingChange('userProfile', base64String);
-      };
-      reader.readAsDataURL(file);
-    }
-  };
-
-  const handleRemoveProfile = () => {
-    handleSettingChange('userProfile', "");
-  };
-
-
   return (
    <>
     <div className={styles.modalHeader}>
      <h2>설정</h2>
     </div>
     <div className={styles.modalBody}>
-     <div className={styles.section}>
-      <h3>프로필 설정</h3>
-     </div>
-     <div className={styles.section}>
-      <div className={styles.profileSection}>
-       <div className={styles.profilePreview}>
-        {settings.userProfile ? (
-         <img
-          src={settings.userProfile}
-          alt="Profile"
-          className={styles.profileImage}
-         />
-        ) : (
-         <div className={styles.profilePlaceholder}>
-          <span>👤</span>
-         </div>
-        )}
-       </div>
-       <div className={styles.profileActions}>
-        <input
-         type="file"
-         id="profileInput"
-         accept="image/*"
-         onChange={handleProfileImageChange}
-         className={styles.fileInput}
-        />
-        <label htmlFor="profileInput" className={styles.uploadButton}>
-         프로필 이미지 선택
-        </label>
-        {settings.userProfile && (
-         <button onClick={handleRemoveProfile} className={styles.removeButton}>
-          이미지 제거
-         </button>
-        )}
-       </div>
-      </div>
-     </div>
      <div className={styles.section}>
       <h3>AI 모델 API Endpoint 설정</h3>
      </div>
@@ -110,7 +56,7 @@ export const SettingsModal: FC<SettingsModalProps> = () => {
      </button>
     </div>
    </>
-  )
+  );
 };
 
 export default SettingsModal;

@@ -11,7 +11,6 @@ export interface APISettings {
 export interface AppSettings {
   modelType: 'openai' | 'claude' | 'custom';
   endpoint: string;
-  userProfile: string;
   apiKey: string;
 }
 
@@ -21,6 +20,12 @@ export const useSettings = () => {
   // Chrome Storage에서 설정 로드
   const loadSettings = useCallback(async () => {
     try {
+      // chrome.storage가 없는 경우 (개발 환경 등)
+      if (!chrome?.storage?.sync) {
+        console.warn('Chrome storage not available, using default settings');
+        return;
+      }
+      
       const result = await chrome.storage.sync.get(['settings']);
       if (result.settings) {
         setSettings(result.settings);
@@ -35,13 +40,22 @@ export const useSettings = () => {
     try {
       const updatedSettings = { ...settings, ...newSettings };
       setSettings(updatedSettings);
+      
+      // chrome.storage가 없는 경우 (개발 환경 등)
+      if (!chrome?.storage?.sync) {
+        console.warn('Chrome storage not available, settings saved only in memory');
+        return;
+      }
+      
       await chrome.storage.sync.set({ settings: updatedSettings });
       
       // background script로 설정 변경 알림
-      chrome.runtime.sendMessage({ 
-        type: 'SETTINGS_UPDATED', 
-        settings: updatedSettings 
-      });
+      if (chrome?.runtime?.sendMessage) {
+        chrome.runtime.sendMessage({ 
+          type: 'SETTINGS_UPDATED', 
+          settings: updatedSettings 
+        });
+      }
     } catch (error) {
       console.error('Failed to save settings:', error);
     }
@@ -71,6 +85,10 @@ export const useSettings = () => {
 
   // Storage 변경 감지
   useEffect(() => {
+    if (!chrome?.storage?.onChanged) {
+      return;
+    }
+    
     const handleStorageChange = (changes: { [key: string]: chrome.storage.StorageChange }) => {
       if (changes.settings && changes.settings.newValue) {
         setSettings(changes.settings.newValue);
@@ -83,6 +101,10 @@ export const useSettings = () => {
 
   // Background script 메시지 감지
   useEffect(() => {
+    if (!chrome?.runtime?.onMessage) {
+      return;
+    }
+    
     const messageListener = (message: any) => {
       if (message.type === 'SETTINGS_UPDATED' && message.settings) {
         setSettings(message.settings);
