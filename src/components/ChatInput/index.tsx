@@ -1,15 +1,9 @@
-import React, { useRef } from 'react';
+import { useRef, type FC } from 'react';
 import styles from './ChatInput.module.css';
+import type { ChatInputProps } from './types';
 
-interface ChatInputProps {
-  value: string;
-  onChange: (value: string) => void;
-  onSend: () => void;
-  disabled?: boolean;
-  placeholder?: string;
-}
 
-export const ChatInput: React.FC<ChatInputProps> = ({ 
+export const ChatInput: FC<ChatInputProps> = ({ 
   value, 
   onChange, 
   onSend, 
@@ -18,7 +12,7 @@ export const ChatInput: React.FC<ChatInputProps> = ({
 }) => {
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
-  const handleKeyPress = (e: React.KeyboardEvent) => {
+  const handleKeyPress = (e: KeyboardEvent) => {
     if (e.key === 'Enter' && !e.shiftKey) {
       e.preventDefault();
       onSend();
@@ -31,7 +25,7 @@ export const ChatInput: React.FC<ChatInputProps> = ({
         ref={textareaRef}
         value={value}
         onChange={(e) => onChange(e.target.value)}
-        onKeyPress={handleKeyPress}
+        onKeyDown={handleKeyPress}
         placeholder={placeholder}
         rows={1}
         className={styles.input}

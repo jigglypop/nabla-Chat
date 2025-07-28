@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useAtom } from 'jotai';
 import styles from './ChatApp.module.css';
 import type { ChatAppProps } from './types';
@@ -6,7 +6,6 @@ import { ChatHeader } from '../../components/ChatHeader';
 import { MessageList } from '../../components/MessageList';
 import { ChatInput } from '../../components/ChatInput';
 import { backgrounds } from '../../components/BGSelector/constants';
-import { SettingsModal } from '../../components/SettingsModal';
 import useResize from '../../hooks/useResize';
 import { useAIChat } from '../../hooks/useAIChat';
 import {
@@ -33,17 +32,10 @@ const ChatApp: React.FC<ChatAppProps> = ({ onClose }) => {
   const [messages, setMessages] = useAtom(messagesAtom);
   const [input, setInput] = useAtom(inputAtom);
   const [isMinimized, setIsMinimized] = useAtom(isMinimizedAtom);
-  const [background, setBackground] = useAtom(backgroundAtom);
   const [chatPosition, setChatPosition] = useAtom(chatPositionAtom);
   const [chatSize, setChatSize] = useAtom(chatSizeAtom);
   const [userProfile] = useAtom(userProfileAtom);
-
   const { sendMessage, isLoading, isConnected } = useAIChat();
-
-  const [isSettingsOpen, setIsSettingsOpen] = useState(false);
-
-  const currentBg = backgrounds.find(bg => bg.id === background) || backgrounds[0];
-  const isDarkTheme = ['gradient4', 'gradient5', 'gradient6'].includes(background);
 
   useEffect(() => {
     const handleMessage = (event: MessageEvent) => {
@@ -110,54 +102,63 @@ const ChatApp: React.FC<ChatAppProps> = ({ onClose }) => {
   }, [onResize]);
 
   return (
-    <div 
-      ref={containerRef}
-      className={`${styles.container} ${isMinimized ? styles.minimized : ''}`} 
-      style={{ 
-        '--chat-bg': currentBg.value,
-        width: chatSize.width + 'px',
-        height: isMinimized ? '60px' : chatSize.height + 'px',
-        left: chatPosition.x + 'px',
-        top: chatPosition.y + 'px'
-      } as React.CSSProperties}
-      data-theme={isDarkTheme ? 'dark' : 'light'}
-      data-background={background}
-    >
-      <div className={`${styles.resizeHandle} ${styles.resizeTop}`} onMouseDown={() => setIsResizing('top')} />
-      {/* 우측 리사이즈 핸들 제거 - 스크롤바와 겹침 */}
-      <div className={`${styles.resizeHandle} ${styles.resizeBottom}`} onMouseDown={() => setIsResizing('bottom')} />
-      <div className={`${styles.resizeHandle} ${styles.resizeLeft}`} onMouseDown={() => setIsResizing('left')} />
-      <div className={`${styles.resizeHandle} ${styles.resizeTopLeft}`} onMouseDown={() => setIsResizing('top-left')} />
-      <div className={`${styles.resizeHandle} ${styles.resizeTopRight}`} onMouseDown={() => setIsResizing('top-right')} />
-      <div className={`${styles.resizeHandle} ${styles.resizeBottomLeft}`} onMouseDown={() => setIsResizing('bottom-left')} />
-      <div className={`${styles.resizeHandle} ${styles.resizeBottomRight}`} onMouseDown={() => setIsResizing('bottom-right')} />
-      
-      <ChatHeader
-        isConnected={isConnected}
-        onSettingsClick={() => setIsSettingsOpen(true)}
-        isMinimized={isMinimized}
-        onMinimizeClick={() => setIsMinimized(!isMinimized)}
-        onCloseClick={onClose}
-        onMouseDown={handleHeaderMouseDown}
-      />
-
-      {!isMinimized && (
-        <>
-          <MessageList 
-            messages={messages}
-            isLoading={isLoading}
-            userProfile={userProfile}
-          />
-          <ChatInput
-            value={input}
-            onChange={setInput}
-            onSend={handleSend}
-            disabled={isLoading}
-          />
-        </>
-      )}
-      <SettingsModal isOpen={isSettingsOpen} onClose={() => setIsSettingsOpen(false)} />
-    </div>
+   <div
+    ref={containerRef}
+    className={`${styles.container} ${isMinimized ? styles.minimized : ''}`}
+    style={
+     {
+      '--chat-bg': backgrounds[0],
+      width: chatSize.width + 'px',
+      height: isMinimized ? '60px' : chatSize.height + 'px',
+      left: chatPosition.x + 'px',
+      top: chatPosition.y + 'px',
+     } as React.CSSProperties
+    }
+    data-theme={'dark'}
+   >
+    <div
+     className={`${styles.resizeHandle} ${styles.resizeTop}`}
+     onMouseDown={() => setIsResizing('top')}
+    />
+    {/* 우측 리사이즈 핸들 제거 - 스크롤바와 겹침 */}
+    <div
+     className={`${styles.resizeHandle} ${styles.resizeBottom}`}
+     onMouseDown={() => setIsResizing('bottom')}
+    />
+    <div
+     className={`${styles.resizeHandle} ${styles.resizeLeft}`}
+     onMouseDown={() => setIsResizing('left')}
+    />
+    <div
+     className={`${styles.resizeHandle} ${styles.resizeTopLeft}`}
+     onMouseDown={() => setIsResizing('top-left')}
+    />
+    <div
+     className={`${styles.resizeHandle} ${styles.resizeTopRight}`}
+     onMouseDown={() => setIsResizing('top-right')}
+    />
+    <div
+     className={`${styles.resizeHandle} ${styles.resizeBottomLeft}`}
+     onMouseDown={() => setIsResizing('bottom-left')}
+    />
+    <div
+     className={`${styles.resizeHandle} ${styles.resizeBottomRight}`}
+     onMouseDown={() => setIsResizing('bottom-right')}
+    />
+    <ChatHeader
+     isConnected={isConnected}
+     isMinimized={isMinimized}
+     onMinimizeClick={() => setIsMinimized(!isMinimized)}
+     onCloseClick={onClose}
+     onMouseDown={handleHeaderMouseDown}
+    />
+    {!isMinimized && (
+     <>
+      <MessageList messages={messages} isLoading={isLoading} userProfile={userProfile} />
+      <ChatInput value={input} onChange={setInput} onSend={handleSend} disabled={isLoading} />
+     </>
+    )}
+   </div>
   )
 }
 

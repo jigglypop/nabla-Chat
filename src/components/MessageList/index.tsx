@@ -1,20 +1,9 @@
-import React, { useRef, useEffect } from 'react';
+import { useRef, useEffect, type FC } from 'react';
 import styles from './MessageList.module.css';
+import type { MessageListProps } from './types';
 
-interface Message {
-  id: string;
-  role: 'user' | 'assistant';
-  content: string;
-  timestamp: Date;
-}
 
-interface MessageListProps {
-  messages: Message[];
-  isLoading: boolean;
-  userProfile?: string | null;
-}
-
-export const MessageList: React.FC<MessageListProps> = ({ messages, isLoading, userProfile }) => {
+export const MessageList: FC<MessageListProps> = ({ messages, isLoading, userProfile }) => {
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   const scrollToBottom = () => {

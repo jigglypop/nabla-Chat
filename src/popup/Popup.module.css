@@ -7,14 +7,16 @@
 body {
   background-color: #1a1a1a;
   color: #e0e0e0;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
-  font-size: 14px;
-  line-height: 1.5;
+  font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+  line-height: 1.2;
+  width: 500px;
+  min-height: 550px; /* Adjusted height */
 }
 
 .popup-container {
-  width: 320px;
-  min-height: 200px; /* Adjusted height */
+  position: relative;
+  width: 100%;
+  height: 100%;
   display: flex;
   flex-direction: column;
 }

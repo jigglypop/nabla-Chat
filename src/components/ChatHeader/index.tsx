@@ -1,15 +1,8 @@
-import React from 'react';
+import { type FC } from 'react';
 import styles from './ChatHeader.module.css';
+import type { ChatHeaderProps } from './types';
 
-interface ChatHeaderProps {
-  isConnected: boolean | null;
-  isMinimized: boolean;
-  onMinimizeClick: () => void;
-  onCloseClick: () => void;
-  onMouseDown: (e: React.MouseEvent) => void;
-}
-
-export const ChatHeader: React.FC<ChatHeaderProps> = ({
+export const ChatHeader: FC<ChatHeaderProps> = ({
   isConnected,
   isMinimized,
   onMinimizeClick,

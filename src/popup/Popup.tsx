@@ -1,12 +1,7 @@
-import React from 'react';
-import { useAtom } from 'jotai';
-import { backgroundAtom } from '../atoms/chatAtoms';
-import { BackgroundSelector } from '../components/BGSelector';
 import styles from './Popup.module.css';
+import SettingsModal from '../components/SettingsModal';
 
-function Popup() {
-  const [background, setBackground] = useAtom(backgroundAtom);
-
+export default function Popup() {
   return (
     <div className={styles.popupContainer}>
       <header className={styles.popupHeader}>
@@ -32,22 +27,7 @@ function Popup() {
           </div>
         </div>
       </header>
-      
-      <main className={styles.popupMain}>
-        <section className={styles.settingsSection}>
-          <h2>테마 설정</h2>
-          <p className={styles.sectionDescription}>채팅창의 테마를 선택하세요.</p>
-          <div className={styles.selectorWrapper}>
-            <BackgroundSelector background={background} setBackground={setBackground} />
-          </div>
-        </section>
-      </main>
-
-      <footer className={styles.popupFooter}>
-        <a href="https://github.com/nabla-chat/nabla-chat" target="_blank" rel="noopener noreferrer" className={styles.footerLink}>GitHub</a>
-      </footer>
+      <SettingsModal/>
     </div>
   );
 }
-
-export default Popup;

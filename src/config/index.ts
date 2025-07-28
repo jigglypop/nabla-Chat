@@ -16,7 +16,6 @@ export const NH_CONFIG = {
     'nhbank.com',
     'nonghyup.local'
   ],
-
   // 보안 설정
   security: {
     encryption: {
@@ -33,79 +32,6 @@ export const NH_CONFIG = {
       대외비: { canProcess: true, encryption: true },
       내부용: { canProcess: true, masking: true },
       공개: { canProcess: true }
-    }
-  },
-
-  // 농협 업무 특화 기능
-  features: {
-    loan: {
-      name: '여신 업무 지원',
-      endpoints: {
-        analyze: '/loan/analyze',
-        creditScore: '/loan/credit-score',
-        collateral: '/loan/collateral',
-        regulation: '/loan/regulation-check'
-      }
-    },
-    deposit: {
-      name: '수신 업무 지원',
-      endpoints: {
-        recommend: '/deposit/recommend',
-        explain: '/deposit/explain-terms',
-        calculate: '/deposit/interest-calc',
-        tax: '/deposit/tax-benefit'
-      }
-    },
-    forex: {
-      name: '외환 업무 지원',
-      endpoints: {
-        rate: '/forex/exchange-rate',
-        swift: '/forex/swift-translate',
-        regulation: '/forex/regulation',
-        document: '/forex/generate-doc'
-      }
-    },
-    digital: {
-      name: '디지털 금융',
-      endpoints: {
-        mobile: '/digital/mobile-support',
-        api: '/digital/openbanking-doc',
-        qr: '/digital/qr-payment',
-        error: '/digital/error-guide'
-      }
-    },
-    agriculture: {
-      name: '농업 금융',
-      endpoints: {
-        policy: '/agri/policy-fund',
-        price: '/agri/product-price',
-        livestock: '/agri/livestock-info',
-        coop: '/agri/cooperative'
-      }
-    }
-  },
-
-  // 부서별 설정
-  departments: {
-    '여신기획부': {
-      defaultFeatures: ['loan', 'digital'],
-      apiLimit: 1000
-    },
-    '수신기획부': {
-      defaultFeatures: ['deposit', 'digital'],
-      apiLimit: 1000
-    },
-    '외환업무부': {
-      defaultFeatures: ['forex'],
-      apiLimit: 500
-    },
-    '디지털혁신부': {
-      defaultFeatures: ['digital', 'loan', 'deposit'],
-      apiLimit: 2000
-    },
-    '농업금융부': {
-      defaultFeatures: ['agriculture', 'loan'],
-      apiLimit: 800
     }
   },
   // 로깅 설정
@@ -134,7 +60,6 @@ export const NH_CONFIG = {
       unauthorized: '권한이 없습니다. 농협 통합인증(NH-SSO)으로 로그인해주세요.'
     }
   },
-
   // 성능 설정
   performance: {
     cache: {
@@ -147,7 +72,6 @@ export const NH_CONFIG = {
       retryDelay: 1000
     }
   },
-
   // 업데이트 설정
   update: {
     checkInterval: 24 * 60 * 60 * 1000, // 매일
