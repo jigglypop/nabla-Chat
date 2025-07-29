@@ -304,3 +304,30 @@ body {
 .popupActions button:first-child:hover {
   opacity: 0.9;
 } 
+
+
+/* 전체 버튼 스타일 */
+.chatButton {
+  background-color: #0066ff;
+  border: none;
+  border-radius: 50%;
+  width: 48px;       /* 기존보다 조금 작게 */
+  height: 48px;      /* 기존보다 조금 작게 */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  padding: 0;
+}
+/* 이모지(채팅/닫기) 공통 스타일 */
+.icon {
+  line-height: 1;
+}
+/* 말풍선 이모지 크기 */
+.chatEmoji {
+  font-size: 1.2rem;   /* 크게 보이도록 */
+}
+/* 닫기 이모지 크기 */
+.closeEmoji {
+  font-size: 1.2rem;   /* 말풍선과 동일하게 */
+}

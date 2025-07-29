@@ -103,11 +103,9 @@
 .input,
 .select {
   width: 100%;
-  padding: 10px 14px;
   border: 1px solid #444;
   border-radius: 8px;
   font-size: 14px;
-  font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
   transition: all 0.15s;
   background: #2a2a2a;
   color: #f0f0f0;
@@ -161,7 +159,6 @@
   font-weight: 500;
   cursor: pointer;
   transition: all 0.15s;
-  font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
   border: none;
 }
 

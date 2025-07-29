@@ -13,12 +13,9 @@ export const SettingsModal: FC<SettingsModalProps> = () => {
 
   return (
    <>
-    <div className={styles.modalHeader}>
-     <h2>설정</h2>
-    </div>
     <div className={styles.modalBody}>
      <div className={styles.section}>
-      <h3>AI 모델 API Endpoint 설정</h3>
+      <h2>API Endpoint</h2>
      </div>
      {settings.modelType === 'custom' && (
       <div className={styles.section}>
@@ -33,30 +30,23 @@ export const SettingsModal: FC<SettingsModalProps> = () => {
        </label>
       </div>
      )}
-
      <div className={styles.section}>
       <label className={styles.label}>
        <input
         type="password"
         value={settings.apiKey}
         onChange={e => handleSettingChange('apiKey', e.target.value)}
-        placeholder={
-         settings.modelType === 'openai'
-          ? '...'
-          : 'your-api-key'
-        }
+        placeholder={settings.modelType === 'openai' ? '...' : 'your-api-key'}
         className={styles.input}
        />
       </label>
      </div>
     </div>
     <div className={styles.modalFooter}>
-     <button className={`${contentStyles.chatButton} ${contentStyles.box}`}>
-      저장
-     </button>
+     <button className={styles.saveButton}>저장</button>
     </div>
    </>
-  );
+  )
 };
 
 export default SettingsModal; 

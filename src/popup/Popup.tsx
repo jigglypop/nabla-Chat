@@ -22,7 +22,7 @@ export default function Popup() {
             </div>
             <div className={styles.titleSection}>
               <h1>∇·Chat</h1>
-              <span className={styles.version}>v0.1.0</span>
+              <span className={styles.version}>v1.0.0</span>
             </div>
           </div>
         </div>

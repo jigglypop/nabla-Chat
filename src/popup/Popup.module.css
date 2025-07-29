@@ -9,8 +9,8 @@ body {
   color: #e0e0e0;
   font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
   line-height: 1.2;
-  width: 500px;
-  min-height: 550px; /* Adjusted height */
+  width: 300px;
+  min-height: 350px; 
 }
 
 .popup-container {
